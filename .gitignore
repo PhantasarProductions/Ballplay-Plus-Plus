@@ -1,0 +1,16 @@
+# That .vs directory! Begone!
+.vs
+
+
+# No crappy files added by Mac
+.DS_Store
+._*
+
+# I do NOT want the build files for the game itself
+
+BallPlay++/Build
+BallPlay++/Compile
+
+
+# This file gets created by the powershell script the compiler is configured to run prior to compiling the game as a whole, so having in in this repository will only spook things up.
+builddate.h 
