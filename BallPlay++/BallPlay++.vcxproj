@@ -84,7 +84,7 @@
     <OutDir>$(SolutionDir)Build</OutDir>
     <IntDir>Compile\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>E:\Projects\Applications\VisualStudio\VC\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include;E:\Projects\Applications\VisualStudio;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_mixer-2.0.4\include;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_image-2.0.5\include;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2-2.0.12\include;E:\Projects\Applications\VisualStudio\VC\JCR6\headers;E:\Projects\Applications\VisualStudio\VC\Medals;E:\Projects\Applications\VisualStudio\VC\TrickyUnits\Headers;E:\Projects\Applications\VisualStudio\VC\TQSG;E:\Projects\Applications\VisualStudio\VC\BallPlay++\Game\BallPlay++\headers;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Projects\Applications\VisualStudio\VC\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\lib_release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_image-2.0.5\lib\x64;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_mixer-2.0.4\lib\x64;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2-2.0.12\lib\x64;E:\Projects\Applications\VisualStudio\VC\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\lib_release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -140,7 +140,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sdl2.lib;sdl2main.lib;sdl2_image.lib;sdl2_mixer.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>pwsh pre-build.ps1</Command>
@@ -152,17 +152,26 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\JCR6\src\jcr6_core.cpp" />
     <ClCompile Include="..\..\..\JCR6\src\jcr6_zlib.cpp" />
+    <ClCompile Include="..\..\..\TQSG\TQSA.cpp" />
+    <ClCompile Include="..\..\..\TQSG\TQSE.cpp" />
+    <ClCompile Include="..\..\..\TQSG\TQSG.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\GINIE.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickStream.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickString.cpp" />
+    <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyMath.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp" />
+    <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\Resource.cpp" />
     <ClCompile Include="source\__main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h" />
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zlib.h" />
+    <ClInclude Include="..\..\..\TQSG\TQSA.hpp" />
+    <ClInclude Include="..\..\..\TQSG\TQSE.hpp" />
+    <ClInclude Include="..\..\..\TQSG\TQSG.hpp" />
     <ClInclude Include="..\..\..\TrickyUnits\Headers\QuickString.hpp" />
+    <ClInclude Include="headers\Chain.hpp" />
     <ClInclude Include="headers\Resource.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

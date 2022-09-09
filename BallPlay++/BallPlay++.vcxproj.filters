@@ -25,6 +25,9 @@
     <Filter Include="Header Files\Units">
       <UniqueIdentifier>{396d102e-4c4e-48e3-a3a0-fefd3b16d8da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\TQSG">
+      <UniqueIdentifier>{5ab79938-802e-4ee3-8a74-2030aa31fbca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\__main.cpp">
@@ -51,6 +54,21 @@
     <ClCompile Include="source\Resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\Chain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TQSG\TQSA.cpp">
+      <Filter>Source Files\TQSG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TQSG\TQSE.cpp">
+      <Filter>Source Files\TQSG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TQSG\TQSG.cpp">
+      <Filter>Source Files\TQSG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyMath.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h">
@@ -64,6 +82,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\TrickyUnits\Headers\QuickString.hpp">
       <Filter>Header Files\Units</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Chain.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TQSG\TQSA.hpp">
+      <Filter>Source Files\TQSG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TQSG\TQSE.hpp">
+      <Filter>Source Files\TQSG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TQSG\TQSG.hpp">
+      <Filter>Source Files\TQSG</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
