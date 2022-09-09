@@ -13,10 +13,57 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Units">
+      <UniqueIdentifier>{f96fa8be-df8e-4b3d-9ba4-93a2e0d50102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\JCR6">
+      <UniqueIdentifier>{b9ceb00f-ca10-47a9-8c00-893fd237742d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\zlib">
+      <UniqueIdentifier>{dc81fc0b-ffea-40a3-b6cc-7f6ff6b8c527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Units">
+      <UniqueIdentifier>{396d102e-4c4e-48e3-a3a0-fefd3b16d8da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\__main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\GINIE.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\QuickStream.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\QuickString.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JCR6\src\jcr6_core.cpp">
+      <Filter>Source Files\JCR6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JCR6\src\jcr6_zlib.cpp">
+      <Filter>Source Files\JCR6</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h">
+      <Filter>Source Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zlib.h">
+      <Filter>Source Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Resource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TrickyUnits\Headers\QuickString.hpp">
+      <Filter>Header Files\Units</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
