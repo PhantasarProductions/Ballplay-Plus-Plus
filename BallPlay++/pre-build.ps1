@@ -9,6 +9,12 @@ function private:builddate{
 	echo $cpp > headers/builddate.h 
 }
 
+
+function private:imp($want) {
+	echo "Importing: $want"
+	cp "$want" Build
+}
+
 echo "Pre-build script - (c) Jeroen P. Broks 2022"
 
 builddate
