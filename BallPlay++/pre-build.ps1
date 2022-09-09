@@ -21,3 +21,9 @@ builddate
 ../../BuildJCR/bin/Release/net6.0/BuildJCR.exe
 
 imp "E:\projects\applications\visualstudio\vc\zlib-msvc14-x64.1.2.11.7795\build\native\bin_release\zlib.dll"
+
+
+echo "
+Done
+
+"
