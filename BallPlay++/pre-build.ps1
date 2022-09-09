@@ -18,3 +18,5 @@ function private:imp($want) {
 echo "Pre-build script - (c) Jeroen P. Broks 2022"
 
 builddate
+../../BuildJCR/bin/Release/net6.0/BuildJCR.exe
+
