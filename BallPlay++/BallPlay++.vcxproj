@@ -155,13 +155,17 @@
     <ClCompile Include="..\..\..\TQSG\TQSA.cpp" />
     <ClCompile Include="..\..\..\TQSG\TQSE.cpp" />
     <ClCompile Include="..\..\..\TQSG\TQSG.cpp" />
+    <ClCompile Include="..\..\..\TrickyUnits\Source\Dirry.cpp" />
+    <ClCompile Include="..\..\..\TrickyUnits\Source\FileList.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\GINIE.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickStream.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickString.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyMath.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp" />
     <ClCompile Include="source\Chain.cpp" />
+    <ClCompile Include="source\Config.cpp" />
     <ClCompile Include="source\Resource.cpp" />
+    <ClCompile Include="source\Users.cpp" />
     <ClCompile Include="source\__main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +176,9 @@
     <ClInclude Include="..\..\..\TQSG\TQSG.hpp" />
     <ClInclude Include="..\..\..\TrickyUnits\Headers\QuickString.hpp" />
     <ClInclude Include="headers\Chain.hpp" />
+    <ClInclude Include="headers\Config.hpp" />
     <ClInclude Include="headers\Resource.hpp" />
+    <ClInclude Include="headers\Users.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
