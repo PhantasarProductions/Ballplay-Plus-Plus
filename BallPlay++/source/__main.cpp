@@ -60,5 +60,6 @@ int main(int cnt, char** args) {
 	TQSE_Init();
 	CheckUserStartUp();
 	ChainRun();
+	std::cout << "Unloading SDL2\n"; TQSG_Close();
 	return 0;
 }
