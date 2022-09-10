@@ -27,6 +27,10 @@
 #include <Config.hpp>
 #include <Chain.hpp>
 #include <Sinus.hpp>
+#include <MainMenu.hpp>
+#include <Resource.hpp>
+#include <Fonts.hpp>
+#include <Mouse.hpp>
 
 #include <Dirry.hpp>
 #include <FileList.hpp>
@@ -63,10 +67,39 @@ namespace BallPlay {
 	}
 
 	bool NewUser() {
+		static TQSG_AutoImage EnterName{ TQSG_LoadAutoImage(Resource(),"GFX/User/Enter your name.png") }; EnterName->HotCenter();
+		static auto Fnt{ GetFont("Spaced") };
+		int mx = TQSG_ScreenWidth() / 2;
+		static string EName{ "" };
 		TQSG_Cls();
 		TQSE_Poll();
 		DoCheckQuit();
+		SinusColor(255, 0, 0);
 		Sinus();
+		Logo()->Draw(mx, 50);
+		EnterName->Draw(mx, 150);
+		TQSG_Color(0, 180, 255); Fnt->Draw(EName, TQSG_ScreenWidth() / 2, 200, 2);
+		for (auto c = '0'; c <= 'Z'; c++) {
+			int tel = (int)c - (int)'0';
+			int y = tel / 10;
+			int x = tel % 10;
+			char st[3] = { c,0 };			
+			if (c <= '9' || c >= 'A') {
+				int dx = (TQSG_ScreenWidth() / 12) * (x + 1);
+				int dy = 300 + (y * 70);
+				//printf("char %c/%d (%d,%d) tel(%d)\n", c, c, dx, dy,tel); // debug only!!!
+				TQSG_Color(255, 255, 255);
+				int
+					mx{ TQSE_MouseX() },
+					my{ TQSE_MouseY() };
+				if (mx > dx && my > dy && mx < dx + Fnt->W(st) && my < dy + Fnt->H(st)) {
+					TQSG_Color(255, 180, 0);
+					if (EName.size() < 20 && TQSE_MouseHit(1)) EName += c;
+				}
+				Fnt->Draw(st, dx, dy, 2);
+			}
+		}
+		//ShowMouse();
 		Flip();
 		return true;
 	}
