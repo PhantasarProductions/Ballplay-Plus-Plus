@@ -81,6 +81,9 @@
     <ClCompile Include="..\..\..\TrickyUnits\Source\FileList.cpp">
       <Filter>Source Files\Units</Filter>
     </ClCompile>
+    <ClCompile Include="source\Sinus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="headers\Config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Sinus.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

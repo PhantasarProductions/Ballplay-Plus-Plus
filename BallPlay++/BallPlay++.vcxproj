@@ -165,6 +165,7 @@
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\Config.cpp" />
     <ClCompile Include="source\Resource.cpp" />
+    <ClCompile Include="source\Sinus.cpp" />
     <ClCompile Include="source\Users.cpp" />
     <ClCompile Include="source\__main.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="headers\Chain.hpp" />
     <ClInclude Include="headers\Config.hpp" />
     <ClInclude Include="headers\Resource.hpp" />
+    <ClInclude Include="headers\Sinus.hpp" />
     <ClInclude Include="headers\Users.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
