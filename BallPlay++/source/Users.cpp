@@ -37,6 +37,7 @@
 #include <FileList.hpp>
 #include <QuickStream.hpp>
 #include <QuickString.hpp>
+#include <TrickyTime.hpp>
 #include <TQSE.hpp>
 #include <TQSG.hpp>
 
@@ -55,6 +56,7 @@ namespace BallPlay {
 	void _User::Set(std::string username) {
 		_CurrentUser = make_shared<_User>(username);
 		_CurrentUserName = username;
+		Config("Users", "Last", username);
 	}
 	User _User::Get() { return _CurrentUser; }
 
@@ -64,12 +66,17 @@ namespace BallPlay {
 		_UserName = UserName;
 		Data.FromFile(fname,true);
 		Data.AutoSave = fname;
+		if (Data.Value("Meta", "Creation") == "") {
+			Data.Value("Meta", "Creation", CurrentDate() + "; " + CurrentTime());
+			Data.Value("Meta", "Name", UserName);
+		}
 	}
 
 	void CheckUserStartUp(){
 		auto chku{ Config("Users","Last") };
 		if (chku.size() && FileExists(_User::UserDir + "/" + chku + ".ini")) {
-			Crash("No chain to main menu possible yet!"); 
+			_User::Set(Config("Users", "Last"));
+			SetChain(MainMenu);
 			return;
 		}
 		if (FileList(_User::UserDir).size()) {
@@ -134,11 +141,26 @@ namespace BallPlay {
 						SDL_ShowSimpleMessageBox(0, "Sorry!", "That username already exists!\nPick another please!",NULL);
 					else {
 						cout << "Creating user: " << EName << "\n";
-						// actual creation comes later!
+						_User::Set(EName);						
+						SetChain(MainMenu);						
 					}
 				}
 			}
 				ImgOk()->Draw(cx, topy);
+		}
+		{
+			static int xc = TQSG_ScreenWidth() - ImgCancel()->W();
+			TQSG_Color(255, 255, 255);
+			if (my > topy && mx > xc) {
+				TQSG_Color(255, 0, 0);
+				if (TQSE_MouseHit(1)) {
+					if (VisitedMainMenuBefore && _User::Get())
+						SetChain(MainMenu);
+					else
+						return false;
+				}
+			}
+			ImgCancel()->Draw(xc, topy);
 		}
 		//ShowMouse();
 		Flip();
