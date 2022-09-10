@@ -26,5 +26,8 @@
 #pragma once
 #include <TQSG.hpp>
 namespace BallPlay {
+	extern bool VisitedMainMenuBefore;
 	TrickyUnits::TQSG_AutoImage Logo();
+
+	bool MainMenu();
 }
