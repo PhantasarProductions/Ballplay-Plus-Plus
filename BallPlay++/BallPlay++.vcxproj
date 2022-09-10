@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickString.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyMath.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp" />
+    <ClCompile Include="source\BaseButtons.cpp" />
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\Config.cpp" />
     <ClCompile Include="source\Fonts.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="..\..\..\TQSG\TQSE.hpp" />
     <ClInclude Include="..\..\..\TQSG\TQSG.hpp" />
     <ClInclude Include="..\..\..\TrickyUnits\Headers\QuickString.hpp" />
+    <ClInclude Include="headers\BaseButtons.hpp" />
     <ClInclude Include="headers\Chain.hpp" />
     <ClInclude Include="headers\Config.hpp" />
     <ClInclude Include="headers\Fonts.hpp" />
