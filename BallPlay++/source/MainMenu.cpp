@@ -27,7 +27,8 @@
 #include <MainMenu.hpp>
 #include <Resource.hpp>
 #include <Sinus.hpp>
-
+#include <Fonts.hpp>
+#include <Users.hpp>
 
 #include <TQSG.hpp>
 #include <TQSE.hpp>
@@ -63,6 +64,9 @@ namespace BallPlay {
 		SinusColor(0, 0, 255);
 		Sinus();
 		Logo()->Draw(mdx, 50);
+		TQSG_Color(255, 255, 0); GetFont("Mini")->Draw("User:", 2, 2);
+		TQSG_Color(0, 180, 255); GetFont("Mini")->Draw(_User::Get()->UserName(), 2, 22);
+		TQSG_Color(255, 255, 255); GetFont("Mini")->Draw("Copyright Jeroen P. Broks, 2022, licensed under the GPL3", TQSG_ScreenWidth() / 2, TQSG_ScreenHeight(), 2, 1);
 		Flip();
 		return true;
 	}
