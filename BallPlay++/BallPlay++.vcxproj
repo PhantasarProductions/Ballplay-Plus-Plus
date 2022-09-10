@@ -164,6 +164,9 @@
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp" />
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\Config.cpp" />
+    <ClCompile Include="source\Fonts.cpp" />
+    <ClCompile Include="source\MainMenu.cpp" />
+    <ClCompile Include="source\Mouse.cpp" />
     <ClCompile Include="source\Resource.cpp" />
     <ClCompile Include="source\Sinus.cpp" />
     <ClCompile Include="source\Users.cpp" />
@@ -178,6 +181,9 @@
     <ClInclude Include="..\..\..\TrickyUnits\Headers\QuickString.hpp" />
     <ClInclude Include="headers\Chain.hpp" />
     <ClInclude Include="headers\Config.hpp" />
+    <ClInclude Include="headers\Fonts.hpp" />
+    <ClInclude Include="headers\MainMenu.hpp" />
+    <ClInclude Include="headers\Mouse.hpp" />
     <ClInclude Include="headers\Resource.hpp" />
     <ClInclude Include="headers\Sinus.hpp" />
     <ClInclude Include="headers\Users.hpp" />
