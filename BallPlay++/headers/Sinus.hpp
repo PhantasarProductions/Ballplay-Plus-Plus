@@ -24,7 +24,9 @@
 // Version: 22.09.10
 // EndLic
 #pragma once
+#include <QuickTypes.hpp>
 namespace BallPlay {
 	void Sinus();
 	void Sinus(int y, int h);
+	void SinusColor(TrickyUnits::byte r, TrickyUnits::byte g, TrickyUnits::byte b);
 }

@@ -73,10 +73,16 @@ namespace BallPlay {
 		TQSG_Color(r, g, b);
 		TQSG_SetBlend(TQSG_Blend::ADDITIVE);
 		for(byte i=0;i<2;i++) sin_image[i]->Tile(sin_dw, y, sin_iw, sin_sh-y,0,y+offset);
-		offset = (offset + 1) % sin_ih;
+		offset = (offset + 2) % sin_ih;
 		TQSG_SetBlend(TQSG_Blend::ALPHA);
 		TQSG_Color(255,255,255);
 		
+	}
+
+	void SinusColor(byte r, byte g, byte b) {
+		sin_r = r;
+		sin_g = g;
+		sin_b = b;
 	}
 
 }
