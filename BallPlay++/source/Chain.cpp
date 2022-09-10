@@ -21,10 +21,11 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.09
+// Version: 22.09.10
 // EndLic
 #include "Chain.hpp"
 #include <TQSE.hpp>
+
 namespace BallPlay {
 
 	ChainState _State{ nullptr };
@@ -43,6 +44,14 @@ namespace BallPlay {
 		do {
 			Assert(_State, "No state given!");
 		} while (_State());
+	}
+
+	bool CheckQuit() {
+		using namespace TrickyUnits;
+		if (TQSE_Quit()) {
+			return TQSE_Yes("Do you really want to quit immediately?");
+		}
+		return false;
 	}
 
 }
