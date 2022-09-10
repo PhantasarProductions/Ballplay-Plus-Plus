@@ -31,10 +31,12 @@
 #include <Resource.hpp>
 #include <Fonts.hpp>
 #include <Mouse.hpp>
+#include <BaseButtons.hpp>
 
 #include <Dirry.hpp>
 #include <FileList.hpp>
 #include <QuickStream.hpp>
+#include <QuickString.hpp>
 #include <TQSE.hpp>
 #include <TQSG.hpp>
 
@@ -43,10 +45,15 @@ using namespace TrickyUnits;
 namespace BallPlay {
 
 	std::string _User::UserDir{ Dirry("$AppSupport$/BallPlay++/Users") };
-	std::string _User::CurrentUser{ "" };
+	std::string _User::CurrentUserName{ "" };
+	User _User::CurrentUser{ nullptr };
+	
+
+	std::string _User::NameToFile(string name) { return UserDir + "/" + name + ".ini"; }
+	bool _User::Exists(std::string username) { return FileExists(NameToFile(username)); }
 
 	_User::_User(std::string UserName) {
-		std::string fname{ UserDir + "/" + UserName + ".ini" };
+		std::string fname{ NameToFile(UserName) };
 		MakeDir(UserDir);
 		Data.FromFile(fname,true);
 		Data.AutoSave = fname;
@@ -68,16 +75,21 @@ namespace BallPlay {
 
 	bool NewUser() {
 		static TQSG_AutoImage EnterName{ TQSG_LoadAutoImage(Resource(),"GFX/User/Enter your name.png") }; EnterName->HotCenter();
+		static TQSG_AutoImage BackSpace{ TQSG_LoadAutoImage(Resource(),"GFX/User/BackSpace.png") }; Assert(BackSpace->W(), "BackSpace not properly loaded!\n\n" + JCR_Error);
 		static auto Fnt{ GetFont("Spaced") };
-		int mx = TQSG_ScreenWidth() / 2;
+		int
+			mdx = TQSG_ScreenWidth() / 2,
+			mx{ TQSE_MouseX() },
+			my{ TQSE_MouseY() };
+
 		static string EName{ "" };
 		TQSG_Cls();
 		TQSE_Poll();
 		DoCheckQuit();
 		SinusColor(255, 0, 0);
 		Sinus();
-		Logo()->Draw(mx, 50);
-		EnterName->Draw(mx, 150);
+		Logo()->Draw(mdx, 50);
+		EnterName->Draw(mdx, 150);
 		TQSG_Color(0, 180, 255); Fnt->Draw(EName, TQSG_ScreenWidth() / 2, 200, 2);
 		for (auto c = '0'; c <= 'Z'; c++) {
 			int tel = (int)c - (int)'0';
@@ -89,15 +101,29 @@ namespace BallPlay {
 				int dy = 300 + (y * 70);
 				//printf("char %c/%d (%d,%d) tel(%d)\n", c, c, dx, dy,tel); // debug only!!!
 				TQSG_Color(255, 255, 255);
-				int
-					mx{ TQSE_MouseX() },
-					my{ TQSE_MouseY() };
 				if (mx > dx && my > dy && mx < dx + Fnt->W(st) && my < dy + Fnt->H(st)) {
 					TQSG_Color(255, 180, 0);
-					if (EName.size() < 20 && TQSE_MouseHit(1)) EName += c;
+					if (EName.size() < 10 && TQSE_MouseHit(1)) EName += c;
 				}
 				Fnt->Draw(st, dx, dy, 2);
 			}
+		}
+		static int topy = TQSG_ScreenHeight() - 90;
+		if (EName.size()) {
+			TQSG_Color(255, 255, 255);
+			
+			//printf("Backspace(0,%d)  %dx%d\n", y,BackSpace->W(),BackSpace->H());
+			if (my > topy && mx < BackSpace->W()) {
+				TQSG_Color(255, 0, 0);
+				if (TQSE_MouseHit(1)) EName = TrickyUnits::left(EName, EName.size() - 1);
+			}
+			BackSpace->Draw(0, topy);
+			TQSG_Color(255, 255, 255);
+			static int cx = (TQSG_ScreenWidth() / 2) - (ImgOk()->W() / 2);
+			if (my > topy && mx > cx && mx < cx + ImgOk()->W()) {
+				TQSG_Color(0, 255, 0);
+			}
+				ImgOk()->Draw(cx, topy);
 		}
 		//ShowMouse();
 		Flip();
