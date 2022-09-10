@@ -72,6 +72,8 @@ namespace BallPlay {
 		}
 	}
 
+	std::string _User::UserName() { return _UserName; }
+
 	void CheckUserStartUp(){
 		auto chku{ Config("Users","Last") };
 		if (chku.size() && FileExists(_User::UserDir + "/" + chku + ".ini")) {

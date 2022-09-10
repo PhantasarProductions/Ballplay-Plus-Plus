@@ -47,6 +47,7 @@ namespace BallPlay {
 		static void Set(std::string username);
 		static User Get();
 		_User(std::string UserName);
+		std::string UserName();
 	};
 
 	void CheckUserStartUp();
