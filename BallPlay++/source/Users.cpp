@@ -169,4 +169,76 @@ namespace BallPlay {
 		return true;
 	}
 
+	static vector<string> UserList;
+	void RenewUserList() {
+		UserList.clear();
+		for (auto k : FileList(_User::UserDir)) UserList.push_back(StripExt(k));
+	}
+
+
+
+	bool ChangeUser() {
+		int
+			mdx{ TQSG_ScreenWidth() / 2 },
+			topy{ TQSG_ScreenHeight() - ImgCancel()->H()},
+			mx{ TQSE_MouseX() },
+			my{ TQSE_MouseY() };
+		static int
+			xc{ (TQSG_ScreenWidth() / 2) - (ImgCancel()->W() / 2)};
+		static auto
+			Fnt{ GetFont("Spaced") },
+			Mini{ GetFont("Mini") };
+		static TQSG_AutoImage
+			NewUserImg{ nullptr };
+		if (!NewUserImg) {
+			auto fl{ "GFX/User/New User.png" };
+			cout << "Loading: " << fl << endl;			
+			NewUserImg=TQSG_LoadAutoImage(Resource(),fl);
+		}
+		TQSG_Cls();
+		TQSE_Poll();
+		DoCheckQuit();
+		SinusColor(255, 180, 0);
+		Sinus();
+		Logo()->Draw(mdx, 50);
+		Fnt->Draw("Please pick a user", mdx, 100, 2);
+		for (size_t i = 0U; i < UserList.size(); i++) {
+			uint32 col{ i % 4 };
+			size_t row{ (size_t)floor(i / (size_t)4u) };
+			uint32 x{ col * (TQSG_ScreenWidth() / 4) };
+			size_t y{ (row * 20) + 200 };
+			TQSG_Color(255, 255, 255);
+			if (mx > x && my > y && mx < x + (TQSG_ScreenWidth() / 4) && my < y + 20) {
+				TQSG_Color(0,180,255);
+				if (TQSE_MouseHit(1)) {
+					_User::Set(UserList[i]);
+					SetChain(MainMenu);
+					return true;
+				}
+			}
+			Mini->Draw(UserList[i], x, y);
+		}
+		TQSG_Color(255, 255, 255);
+		if (my > topy && mx > xc) {
+			TQSG_Color(255, 0, 0);
+			if (TQSE_MouseHit(1)) {
+				if (VisitedMainMenuBefore && _User::Get())
+					SetChain(MainMenu);
+				else
+					return false;
+			}
+		}
+		ImgCancel()->Draw(xc, topy);
+		TQSG_Color(255, 255, 255);
+		if (my > topy && mx < xc) {
+			TQSG_Color(0,255, 0);
+			if (TQSE_MouseHit(1)) {
+				SetChain(NewUser);
+			}
+		}
+		//cout << "??? " << NewUserImg->Frames() << "\n";
+		NewUserImg->Draw(5, topy);
+		Flip();
+		return true;
+	}
 }

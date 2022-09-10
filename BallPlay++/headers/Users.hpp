@@ -53,5 +53,7 @@ namespace BallPlay {
 	void CheckUserStartUp();
 
 	bool NewUser();
+	void RenewUserList();
+	bool ChangeUser();
 
 }
