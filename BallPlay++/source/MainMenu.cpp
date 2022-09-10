@@ -23,14 +23,26 @@
 // 
 // Version: 22.09.10
 // EndLic
+#include <Chain.hpp>
 #include <MainMenu.hpp>
 #include <Resource.hpp>
+#include <Sinus.hpp>
+
+
+#include <TQSG.hpp>
+#include <TQSE.hpp>
+
+
+
 #include <iostream>
 
 using namespace std;
 using namespace TrickyUnits;
 
 namespace BallPlay {
+
+	bool VisitedMainMenuBefore{ false };
+
 	TQSG_AutoImage Logo() {
 		static TQSG_AutoImage _logo{ nullptr };
 		if (!_logo) {
@@ -39,6 +51,20 @@ namespace BallPlay {
 			cout << "Loaded the BallPlay logo\n";
 		}
 		return _logo;
+	}
+
+	bool MainMenu() {
+		int
+			mdx = TQSG_ScreenWidth() / 2;
+		VisitedMainMenuBefore = true;
+		TQSG_Cls();
+		TQSE_Poll();
+		DoCheckQuit();
+		SinusColor(0, 0, 255);
+		Sinus();
+		Logo()->Draw(mdx, 50);
+		Flip();
+		return true;
 	}
 
 }
