@@ -21,10 +21,13 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.09
+// Version: 22.09.10
 // EndLic
 #pragma once
 #include <string>
+
+#define Flip() TrickyUnits::TQSG_Flip(30)
+#define DoCheckQuit() if (BallPlay::CheckQuit()) return false
 
 typedef bool(*ChainState)();
 
@@ -33,5 +36,5 @@ namespace BallPlay {
 	void Assert(bool condition, std::string err);
 	void SetChain(ChainState State);
 	void ChainRun();
-
+	bool CheckQuit();
 }
