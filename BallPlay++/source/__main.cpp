@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.09
+// Version: 22.09.10
 // EndLic
 // 
 
@@ -36,10 +36,14 @@
 #include <TQSG.hpp>
 #include <TQSE.hpp>
 
+// SDL2
+#include <SDL_image.h>
+
 // BallPlay++
 #include <builddate.h>
 #include <Resource.hpp>
 #include <Chain.hpp>
+#include <Users.hpp>
 
 using namespace TrickyUnits;
 using namespace BallPlay;
@@ -50,7 +54,11 @@ int main(int cnt, char** args) {
 	std::cout << ID("Title") << " resource file by " << ID("Author") << "\n";
 	std::cout << "Last built: " << ID("LastBuild")<< "\n";
 	std::cout << "Build number: " << ID("Build")<< "\n";
-	TQSG_Init("BallPlay++", 1200, 1000);
+	TQSG_Init("BallPlay++", 1200, 1000);	
+	TQSG_Cls();
+	TQSG_Flip(30);
+	TQSE_Init();
+	CheckUserStartUp();
 	ChainRun();
 	return 0;
 }
