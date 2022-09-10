@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickString.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyMath.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp" />
+    <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyTime.cpp" />
     <ClCompile Include="source\BaseButtons.cpp" />
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\Config.cpp" />

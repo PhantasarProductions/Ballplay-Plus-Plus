@@ -37,12 +37,15 @@ namespace BallPlay {
 	class _User {
 	private:
 		TrickyUnits::GINIE Data;
+		static std::string _CurrentUserName;
+		static User _CurrentUser;
+		std::string _UserName;
 	public:
 		static std::string UserDir;
-		static std::string CurrentUserName;
-		static User CurrentUser;
 		static std::string NameToFile(std::string name);
 		static bool Exists(std::string username);
+		static void Set(std::string username);
+		static User Get();
 		_User(std::string UserName);
 	};
 

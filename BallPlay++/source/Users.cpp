@@ -45,16 +45,23 @@ using namespace TrickyUnits;
 namespace BallPlay {
 
 	std::string _User::UserDir{ Dirry("$AppSupport$/BallPlay++/Users") };
-	std::string _User::CurrentUserName{ "" };
-	User _User::CurrentUser{ nullptr };
+	std::string _User::_CurrentUserName{ "" };
+	User _User::_CurrentUser{ nullptr };
 	
 
 	std::string _User::NameToFile(string name) { return UserDir + "/" + name + ".ini"; }
 	bool _User::Exists(std::string username) { return FileExists(NameToFile(username)); }
 
+	void _User::Set(std::string username) {
+		_CurrentUser = make_shared<_User>(username);
+		_CurrentUserName = username;
+	}
+	User _User::Get() { return _CurrentUser; }
+
 	_User::_User(std::string UserName) {
 		std::string fname{ NameToFile(UserName) };
 		MakeDir(UserDir);
+		_UserName = UserName;
 		Data.FromFile(fname,true);
 		Data.AutoSave = fname;
 	}
@@ -122,6 +129,14 @@ namespace BallPlay {
 			static int cx = (TQSG_ScreenWidth() / 2) - (ImgOk()->W() / 2);
 			if (my > topy && mx > cx && mx < cx + ImgOk()->W()) {
 				TQSG_Color(0, 255, 0);
+				if(TQSE_MouseHit(1)) {
+					if (_User::Exists(EName))
+						SDL_ShowSimpleMessageBox(0, "Sorry!", "That username already exists!\nPick another please!",NULL);
+					else {
+						cout << "Creating user: " << EName << "\n";
+						// actual creation comes later!
+					}
+				}
 			}
 				ImgOk()->Draw(cx, topy);
 		}
