@@ -54,9 +54,9 @@ namespace BallPlay {
 	bool _User::Exists(std::string username) { return FileExists(NameToFile(username)); }
 
 	void _User::Set(std::string username) {
-		_CurrentUser = make_shared<_User>(username);
+		_CurrentUser = make_shared<_User>(username); 
 		_CurrentUserName = username;
-		Config("Users", "Last", username);
+		Config("Users", "Last", username); 
 	}
 	User _User::Get() { return _CurrentUser; }
 
