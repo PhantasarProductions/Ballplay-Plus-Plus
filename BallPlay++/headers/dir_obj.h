@@ -24,7 +24,16 @@ namespace BallPlay {
 			arrowup = 0x28,
 			arrownorth = 0x28,
 			levelplate1 = 0x29, // Same as user plate, but in the puzzle by default, and user plate was placed by the player
-			levelplate2 = 0x30,
+			levelplate2 = 0x2a,
+			droidarrowwest = 0x2b,
+			droidarrowleft = 0x2b,
+			droidarroweast = 0x2c,
+			droidarrowright = 0x2c,
+			droidarrowdown = 0x2d,
+			droidarrowsouth = 0x2d,
+			droidarrowup = 0x2e,
+			droiwarrownorht = 0x2e,
+			dot = 0x31,
 			normalexit = 0x70,
 			greenexit = 0x71,
 			redexit = 0x72,
@@ -40,7 +49,8 @@ namespace BallPlay {
 			GreenBall = 0x02,
 			BallRed = 0x03,
 			RedBall = 0x03,
-			Ghost = 0x12
+			Ghost = 0x12,
+			Droid = 0x11
 		};
 
 #ifdef __cplusplus
