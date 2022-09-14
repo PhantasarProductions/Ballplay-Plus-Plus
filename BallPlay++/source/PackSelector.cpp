@@ -16,6 +16,7 @@
 #include <Sinus.hpp>
 #include <Chain.hpp>
 #include <Fonts.hpp>
+#include <PuzzleSelector.hpp>
 
 using namespace std;
 using namespace TrickyUnits;
@@ -72,6 +73,11 @@ namespace BallPlay {
 				TQSG_Color(0, 180, 255);
 				Info(MetX, MetY, Meta[PackageList[i]].Value("Meta", "Name"));				
 				TQSG_Color(255, 180, 0);
+				if (ML) {
+					_PuzPack::SetPack(PackageList[i]);
+					SetChain(PuzzleSelector);
+					return true;
+				}
 				X += 10;
 				Hover = true;
 			} else {
