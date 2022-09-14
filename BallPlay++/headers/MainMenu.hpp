@@ -28,6 +28,7 @@
 namespace BallPlay {
 	extern bool VisitedMainMenuBefore;
 	TrickyUnits::TQSG_AutoImage Logo();
+	TrickyUnits::TQSG_AutoImage BackToMainMenu();
 
 	bool MainMenu();
 }
