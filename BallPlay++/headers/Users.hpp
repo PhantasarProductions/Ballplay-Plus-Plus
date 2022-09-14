@@ -27,6 +27,7 @@
 #include <memory>
 #include <string>
 #include <GINIE.hpp>
+#include <QuickTypes.hpp>
 
 
 namespace BallPlay {
@@ -46,6 +47,14 @@ namespace BallPlay {
 		static bool Exists(std::string username);
 		static void Set(std::string username);
 		static User Get();
+		static std::string Sec2Time(TrickyUnits::uint32 secs);
+		int Solved(std::string pack, std::string puzzle);
+		void Solved(std::string pack, std::string puzzle, int Value);
+		int BestMoves(std::string pack, std::string puzzle);
+		void BestMoves(std::string pack, std::string puzzle, int Value, bool OnlyTheBest = true);
+		int BestTime(std::string pack, std::string puzzle);
+		std::string BestTimeStr(std::string pack, std::string puzzle);
+		void BestTime(std::string pack, std::string puzzle, int Value, bool OnlyTheBest = true);
 		_User(std::string UserName);
 		std::string UserName();
 	};

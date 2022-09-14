@@ -40,6 +40,7 @@
 #include <TrickyTime.hpp>
 #include <TQSE.hpp>
 #include <TQSG.hpp>
+#include <TrickySTOI.hpp>
 
 using namespace TrickyUnits;
 
@@ -59,6 +60,55 @@ namespace BallPlay {
 		Config("Users", "Last", username); 
 	}
 	User _User::Get() { return _CurrentUser; }
+
+	string _User::Sec2Time(uint32 secs) {
+		if (secs < 0) return "N/A";
+		char ret[300];
+		uint32
+			_secs{ secs % 60 },
+			mins{ secs / 60 },
+			_mins{ mins % 60 },
+			hours{ mins / 60 };
+		if (hours)
+			sprintf_s(ret, "%d:%02d:%02d", hours, _mins, _secs);
+		else if (_mins)
+			sprintf_s(ret, "%d:%02d", _mins, _secs);
+		else
+			sprintf_s(ret, "%s", _secs);
+		return ret;
+	}
+
+	int _User::Solved(std::string pack, std::string puzzle) {
+		return ToInt(Data.Value(string("PackData_")+pack, puzzle + "_Soved"));
+	}
+
+	void _User::Solved(std::string pack, std::string puzzle, int Value) {		
+		Data.Value(string("PackData_")+pack, puzzle + "_Solved", Value);
+	}
+
+	int _User::BestMoves(std::string pack, std::string puzzle) {
+		if (Data.Value(string("PackData_")+pack, puzzle + "_moves") == "") return -1;		
+		return ToInt(Data.Value(string("PackData_")+pack, puzzle + "_moves"));
+	}
+
+	void _User::BestMoves(std::string pack, std::string puzzle, int Value, bool OnlyTheBest) {
+		if (BestMoves(pack, puzzle) >= 0 && OnlyTheBest && Value > BestMoves(pack, puzzle)) return;
+		Data.Value(string("PackData_")+pack, puzzle + "_moves", Value);
+	}
+
+	int _User::BestTime(std::string pack, std::string puzzle) {
+		if (Data.Value(string("PackData_")+pack, puzzle + "_time") == "") return -1;
+		return ToInt(Data.Value(string("PackData_")+pack, puzzle + "_time"));
+	}
+
+	std::string _User::BestTimeStr(std::string pack, std::string puzzle) {
+		return Sec2Time(BestTime(pack, puzzle));
+	}
+
+	void _User::BestTime(std::string pack, std::string puzzle, int Value, bool OnlyTheBest) {
+		if (BestTime(pack, puzzle) >= 0 && OnlyTheBest && Value > BestTime(pack, puzzle)) return;
+		Data.Value(string("PackData_")+pack, puzzle + "_Time", Value);
+	}
 
 	_User::_User(std::string UserName) {
 		std::string fname{ NameToFile(UserName) };
