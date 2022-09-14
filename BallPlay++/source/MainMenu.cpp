@@ -29,6 +29,7 @@
 #include <Sinus.hpp>
 #include <Fonts.hpp>
 #include <Users.hpp>
+#include <PackSelector.hpp>
 
 #include <TQSG.hpp>
 #include <TQSE.hpp>
@@ -45,8 +46,8 @@ namespace BallPlay {
 	typedef void (*MenuResponse)();
 	static bool GoOn{ true };
 
-	static void PlayGame() { cout << "TODO: Play Game\n"; }
-	static void ChangeUserItem() { cout << "Change User\n"; RenewUserList();  SetChain(ChangeUser); }
+	static void PlayGame() { cout << "Play Game\n"; SetChain(PackSelector); }
+	static void ChangeUserItem() { cout << "Change User\n"; RenewUserList(); SetChain(ChangeUser); }
 	static void JukeBox() { cout << "TODO: Jukebox\n"; }
 	static void Repository() { cout << "TODO: Repository\n"; }
 	static void Site() { cout << "TODO: Site\n"; }
@@ -118,6 +119,15 @@ namespace BallPlay {
 			cout << "Loaded the BallPlay logo\n";
 		}
 		return _logo;
+	}
+
+	TrickyUnits::TQSG_AutoImage BackToMainMenu() {
+		static TQSG_AutoImage ret{ nullptr };
+		if (!ret) {
+			ret = TQSG_LoadAutoImage(Resource(),"GFX/User/Main Menu.png");
+			cout << "'Main Menu' button loaded!\n";
+		}
+		return ret;
 	}
 
 	bool MainMenu() {
