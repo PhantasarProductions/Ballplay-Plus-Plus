@@ -32,11 +32,11 @@ namespace BallPlay {
 			droidarrowdown = 0x2d,
 			droidarrowsouth = 0x2d,
 			droidarrowup = 0x2e,
-			droiwarrownorht = 0x2e,
+			droidarrownorth = 0x2e,
 			dot = 0x31,
 			normalexit = 0x70,
 			greenexit = 0x71,
-			redexit = 0x72,
+			redexit = 0x72, 
 			laser = 0xf0,
 			lasertrigger = 0xf1
 		};
