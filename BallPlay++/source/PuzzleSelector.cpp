@@ -26,7 +26,8 @@
 // C++
 #include <map>
 
-// Tricky's Uints
+// Tricky's Units
+#include <TRandom.hpp>
 #include <TrickySTOI.hpp>
 #include <TQSG.hpp>
 #include <TQSE.hpp>
@@ -181,8 +182,34 @@ namespace BallPlay {
 				if (ML) SetChain(PackSelector);
 			}
 			OtherPack->Draw(sw - 10, sh - 1);
+			TQSG_Color(255, 255, 255);
+			if (MY > sh - BackToMainMenu()->H() && MX < 10 + BackToMainMenu()->W()) {
+				TQSG_Color(0, 180, 255);
+				if (ML) SetChain(MainMenu);
+			}
+
+			BackToMainMenu()->Draw(10, sh - BackToMainMenu()->H()-1);
 		}
 		Flip();
 		return true;
 	}
+	PuzPack _Puzzle::Pack() { return _PuzPack::GetPack(_Pack); }
+
+	Puzzle _Puzzle::Load(std::string Pck, int PuzNum) {
+		auto ret{ make_shared<_Puzzle>() };
+		ret->_Pack = Pck;
+		ret->num = PuzNum;
+		ret->_Tag = ret->Pack()->Tag(PuzNum);
+		int r, g, b;
+		int TimeOut{ 10000 };
+		do {
+			Assert(TimeOut--, "Random Sinus Color Timeout"); // Should never happen, but this is a kind of security safe guard.
+			r = TRand(255);
+			g = TRand(255);
+			b = TRand(255);
+		} while (r + g + b < 100);
+		SinusColor(r, g, b);
+		return ret;
+	}
+
 }

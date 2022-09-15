@@ -35,7 +35,9 @@
 namespace BallPlay {
 
 	class _PuzPack;
+	class _Puzzle;
 	typedef std::shared_ptr<_PuzPack> PuzPack;
+	typedef std::shared_ptr<_Puzzle> Puzzle;
 
 	class _PuzPack {
 	private:
@@ -54,6 +56,18 @@ namespace BallPlay {
 		int Solved(int num); // Solved by the current user that is
 		int BestMoves(int num);
 		std::string BestTime(int num);
+	};
+
+	class _Puzzle{
+	private:
+		std::string
+			_Pack{ "" },
+			_Tag{ "" };
+		int
+			num{ 0 };
+	public:
+		PuzPack Pack();
+		static Puzzle Load(std::string Pck, int PuzNum);		
 	};
 
 	bool PuzzleSelector();
