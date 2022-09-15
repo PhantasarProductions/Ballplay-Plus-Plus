@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\..\TrickyUnits\Source\GINIE.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickStream.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\QuickString.cpp" />
+    <ClCompile Include="..\..\..\TrickyUnits\Source\TRandom.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyMath.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickySTOI.cpp" />
     <ClCompile Include="..\..\..\TrickyUnits\Source\TrickyTime.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\Config.cpp" />
     <ClCompile Include="source\Fonts.cpp" />
+    <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\MainMenu.cpp" />
     <ClCompile Include="source\Mouse.cpp" />
     <ClCompile Include="source\PuzzleSelector.cpp" />
@@ -188,6 +190,7 @@
     <ClInclude Include="headers\Config.hpp" />
     <ClInclude Include="headers\dir_obj.h" />
     <ClInclude Include="headers\Fonts.hpp" />
+    <ClInclude Include="headers\Game.hpp" />
     <ClInclude Include="headers\MainMenu.hpp" />
     <ClInclude Include="headers\Mouse.hpp" />
     <ClInclude Include="headers\PackSelector.hpp" />
