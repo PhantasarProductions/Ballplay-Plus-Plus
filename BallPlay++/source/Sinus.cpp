@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.10
+// Version: 22.09.15
 // EndLic
 
 #include <QuickTypes.hpp>
@@ -73,7 +73,7 @@ namespace BallPlay {
 		TQSG_Color(r, g, b);
 		TQSG_SetBlend(TQSG_Blend::ADDITIVE);
 		for(byte i=0;i<2;i++) sin_image[i]->Tile(sin_dw, y, sin_iw, sin_sh-y,0,y+offset);
-		offset = (offset + 2) % sin_ih;
+		offset = (offset + 4) % sin_ih;
 		TQSG_SetBlend(TQSG_Blend::ALPHA);
 		TQSG_Color(255,255,255);
 		
