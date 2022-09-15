@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.14
+// Version: 22.09.15
 // EndLic
 #pragma once
 // C++
@@ -50,7 +50,10 @@ namespace BallPlay {
 		int MaxPuzzles();
 		std::string Tag(int num);
 		std::string Name(int num);
+		int Next(int n);
 		int Solved(int num); // Solved by the current user that is
+		int BestMoves(int num);
+		std::string BestTime(int num);
 	};
 
 	bool PuzzleSelector();

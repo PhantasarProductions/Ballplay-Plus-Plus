@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.14
+// Version: 22.09.15
 // EndLic
 // C++
 #include <map>
@@ -37,6 +37,7 @@
 #include <PuzzleSelector.hpp>
 #include <Fonts.hpp>
 #include <Users.hpp>
+#include <PackSelector.hpp>
 
 using namespace std;
 using namespace TrickyUnits;
@@ -44,6 +45,8 @@ using namespace TrickyUnits;
  
 
 namespace BallPlay {
+
+	static TQSG_AutoImage OtherPack;
 
 	std::map<std::string, PuzPack> _PuzPack::Pack{};
 	std::string _PuzPack::_Selected{ "" };
@@ -85,8 +88,23 @@ namespace BallPlay {
 		return Meta.Value("Puzzles",Tag(num));
 	}
 
+	int _PuzPack::Next(int n) {
+		Assert(n > 0 && n <= MaxPuzzles(), "Next start value out of range");
+		for (int chk = n % MaxPuzzles(); chk != n - 1; n = (n + 1) % MaxPuzzles())
+			if (!Solved(chk + 1)) return chk + 1;
+		return (n % MaxPuzzles()) + 1;
+	}
+
 	int _PuzPack::Solved(int num) {
 		return _User::Get()->Solved(_Selected, Tag(num));
+	}
+
+	int _PuzPack::BestMoves(int num) {
+		return _User::Get()->BestMoves(_Selected, Tag(num));
+	}
+
+	std::string _PuzPack::BestTime(int num) {
+		return _User::Get()->BestTimeStr(_Selected, Tag(num));
 	}
 	
 
@@ -96,13 +114,20 @@ namespace BallPlay {
 	}
 
 	bool PuzzleSelector() {
+		static int
+			sw{ TQSG_ScreenWidth() },
+			sh{ TQSG_ScreenHeight() },
+			mdx{ TQSG_ScreenWidth() / 2 };
 		int
-			mdx{ TQSG_ScreenWidth() / 2 },
 			MX{ TQSE_MouseX() },
 			MY{ TQSE_MouseY() },
 			startcollumn{ 0 }; // NOT expected to be needed, but if larger packs do appear I got this as a backup
+		bool
+			hover{ false };
 		const int cols{ 2 };
-		static auto KzF{ GetFont("conthrax-sb") };
+		static auto
+			KzF{ GetFont("conthrax-sb") },
+			Mini{ GetFont("Mini") };
 		static auto Vink{ TQSG_LoadAutoImage("GFX/PuzzleSelector/Vink.png") };
 		bool ML{ TQSE_MouseHit(1) };
 		TQSG_Cls();
@@ -129,9 +154,33 @@ namespace BallPlay {
 			//KzF->Draw(pck->Tag(ti), X, Y); // Debug only!
 			TQSG_Color(255, 255, 255);
 			if (MX > X - 30 && MY > Y && MX < X + W && MY < Y + 30) {
+				hover = true;
+				switch (pck->Solved(ti)) {
+				case 0:	Mini->Draw("Unsolved", 5, sh - 5, 0, 1); break;
+				case 1: Mini->Draw("Solved: Once", 5, sh - 25, 0, 1); break;
+				case 2: Mini->Draw("Solved: Twice", 5, sh - 25, 0, 1); break;
+				case 3: Mini->Draw("Solved: Thrice", 5, sh - 25, 0, 1); break;
+				default: Mini->Draw("Solved: " + to_string(pck->Solved(ti)) + " times", 5, sh - 25, 0, 1); break;
+				}
+				if (pck->Solved(ti)) {
+					Mini->Draw("Least moves: " + to_string(pck->BestMoves(ti)) + "; Best time: " + pck->BestTime(ti), 5, sh - 5, 0, 1);
+				}
 				TQSG_Color(255, 180, 0);
 			}
 			KzF->Draw(pck->Name(ti), X, Y); // When not using tags
+		}
+		if (!hover) {
+			if (!OtherPack) {
+				cout << " Loading graphic: Other Pack\n";
+				OtherPack = TQSG_LoadAutoImage(Resource(), "GFX/User/Other Pack.png");
+				OtherPack->HotBottomRight();
+			}
+			TQSG_Color(255, 255, 255);
+			if (MX > sw - OtherPack->W() && MY > sh - OtherPack->H()) {
+				TQSG_Color(0, 180, 255);
+				if (ML) SetChain(PackSelector);
+			}
+			OtherPack->Draw(sw - 10, sh - 1);
 		}
 		Flip();
 		return true;
