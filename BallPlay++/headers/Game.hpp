@@ -44,7 +44,12 @@ namespace BallPlay {
 		SuitAllow Allow;
 		TrickyUnits::TQSG_AutoImage Img{ nullptr };
 		std::string Picture;
+		void _Show(int X);
 	public:
 		SClass(std::string Pic, SuitGetNum _GetNum,SuitAllow _Allow);
+		static void ShowSuits();
 	};
+
+
+	bool Game();
 }
