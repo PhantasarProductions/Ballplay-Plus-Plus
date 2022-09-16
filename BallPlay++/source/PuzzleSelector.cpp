@@ -210,6 +210,17 @@ namespace BallPlay {
 	}
 	PuzPack _Puzzle::Pack() { return _PuzPack::GetPack(_Pack); }
 
+	SuperTed::TeddyRoom _Puzzle::PuzR() { return PuzMap->Rooms["PUZZLE"]; }
+
+	int _Puzzle::PixW() { return PuzR()->PixW(); }
+	int _Puzzle::PixH() { return PuzR()->PixH(); }
+
+	int _Puzzle::W() { return PuzR()->W(); }
+	int _Puzzle::H() { return PuzR()->H(); }
+
+	int _Puzzle::GridW() { return PuzR()->GW(); }
+	int _Puzzle::GridH() { return PuzR()->GH(); }
+
 	static void PZLCrash(std::string err){
 		Crash("SuperTed Loading Error!\n\n" + err);
 
@@ -235,6 +246,7 @@ namespace BallPlay {
 		cout << "Loading puzzle: " << ret->_Tag<<endl;
 		ret->PuzMap = SuperTed::LoadTeddy(Resource(),"Packages/"+Pck+"/Puzzles/"+ret->_Tag);
 		if (!ret->PuzMap) PZLCrash("For unknown reasons loading puzzle " + ret->_Tag + " from package '" + Pck + "' failed");
+		cout << "Success. PixelFormat " << ret->PixW() << "x" << ret->PixH() << "; TileFormat:" << ret->W()<< "x"<<ret->H() <<"; Grid: "<<ret->GridW()<<"x"<<ret->GridH() << endl;
 		return ret;
 	}
 

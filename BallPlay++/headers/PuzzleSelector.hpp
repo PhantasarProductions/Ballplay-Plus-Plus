@@ -75,6 +75,13 @@ namespace BallPlay {
 
 	public:
 		PuzPack Pack();
+		SuperTed::TeddyRoom PuzR();
+		int PixW();
+		int PixH();
+		int W();
+		int H();
+		int GridW();
+		int GridH();
 		static Puzzle Load(std::string Pck, int PuzNum);		
 	};
 
