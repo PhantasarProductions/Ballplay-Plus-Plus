@@ -31,6 +31,9 @@
     <Filter Include="Header Files\SuperTed">
       <UniqueIdentifier>{628d66df-009b-48f6-934a-fb89b9c563dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SuperTed">
+      <UniqueIdentifier>{1e3c6d40-d0d1-43cc-b8c7-e3ec4361bbf6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\__main.cpp">
@@ -114,6 +117,9 @@
     <ClCompile Include="..\..\..\TrickyUnits\Source\TRandom.cpp">
       <Filter>Source Files\Units</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\SuperTed\C++ Class\source\SuperTed_Core.cpp">
+      <Filter>Source Files\SuperTed</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h">
@@ -172,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="headers\Game.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\SuperTed\C++ Class\headers\SuperTed_Core.hpp">
+      <Filter>Header Files\SuperTed</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

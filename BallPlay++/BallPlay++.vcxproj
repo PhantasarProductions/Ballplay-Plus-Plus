@@ -83,7 +83,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build</OutDir>
     <IntDir>Compile\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>E:\Projects\Applications\VisualStudio\VC\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include;E:\Projects\Applications\VisualStudio;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_mixer-2.0.4\include;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_image-2.0.5\include;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2-2.0.12\include;E:\Projects\Applications\VisualStudio\VC\JCR6\headers;E:\Projects\Applications\VisualStudio\VC\Medals;E:\Projects\Applications\VisualStudio\VC\TrickyUnits\Headers;E:\Projects\Applications\VisualStudio\VC\TQSG;E:\Projects\Applications\VisualStudio\VC\BallPlay++\Game\BallPlay++\headers;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Projects\Applications\VisualStudio\VC\SuperTed\C++ Class\headers;E:\Projects\Applications\VisualStudio\VC\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include;E:\Projects\Applications\VisualStudio;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_mixer-2.0.4\include;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_image-2.0.5\include;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2-2.0.12\include;E:\Projects\Applications\VisualStudio\VC\JCR6\headers;E:\Projects\Applications\VisualStudio\VC\Medals;E:\Projects\Applications\VisualStudio\VC\TrickyUnits\Headers;E:\Projects\Applications\VisualStudio\VC\TQSG;E:\Projects\Applications\VisualStudio\VC\BallPlay++\Game\BallPlay++\headers;$(IncludePath)</IncludePath>
     <LibraryPath>E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_image-2.0.5\lib\x64;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2_mixer-2.0.4\lib\x64;E:\Projects\Applications\VisualStudio\VC\3rdparty\SDL2-2.0.12\lib\x64;E:\Projects\Applications\VisualStudio\VC\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\lib_release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\JCR6\src\jcr6_core.cpp" />
     <ClCompile Include="..\..\..\JCR6\src\jcr6_zlib.cpp" />
+    <ClCompile Include="..\..\..\SuperTed\C++ Class\source\SuperTed_Core.cpp" />
     <ClCompile Include="..\..\..\TQSG\TQSA.cpp" />
     <ClCompile Include="..\..\..\TQSG\TQSE.cpp" />
     <ClCompile Include="..\..\..\TQSG\TQSG.cpp" />
@@ -181,6 +182,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h" />
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zlib.h" />
+    <ClInclude Include="..\..\..\SuperTed\C++ Class\headers\SuperTed_Core.hpp" />
     <ClInclude Include="..\..\..\TQSG\TQSA.hpp" />
     <ClInclude Include="..\..\..\TQSG\TQSE.hpp" />
     <ClInclude Include="..\..\..\TQSG\TQSG.hpp" />

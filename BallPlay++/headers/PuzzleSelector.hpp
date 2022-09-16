@@ -32,6 +32,8 @@
 // BallPlay
 #include <Chain.hpp>
 #include <Resource.hpp>
+#include <SuperTed_Core.hpp>
+
 namespace BallPlay {
 
 	enum class Mission { Unknown, Normal, BreakAway, BreakFree, DotCollector, SaveTheGirl };
