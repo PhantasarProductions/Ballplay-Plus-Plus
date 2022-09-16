@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.15
+// Version: 22.09.16
 // EndLic
 #pragma once
 // C++
@@ -33,6 +33,8 @@
 #include <Chain.hpp>
 #include <Resource.hpp>
 namespace BallPlay {
+
+	enum class Mission { Unknown, Normal, BreakAway, BreakFree, DotCollector, SaveTheGirl };
 
 	class _PuzPack;
 	class _Puzzle;
@@ -66,6 +68,8 @@ namespace BallPlay {
 			_Tag{ "" };
 		int
 			num{ 0 };
+		Mission _Mission{ Mission::Unknown };
+
 	public:
 		PuzPack Pack();
 		static Puzzle Load(std::string Pck, int PuzNum);		
