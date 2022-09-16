@@ -49,6 +49,7 @@ namespace BallPlay {
 		static void SetPack(std::string pack);
 		static PuzPack GetPack(std::string pack, bool autoset = false);
 		static PuzPack GetPack();
+		static std::string Selected();
 		int MaxPuzzles();
 		std::string Tag(int num);
 		std::string Name(int num);

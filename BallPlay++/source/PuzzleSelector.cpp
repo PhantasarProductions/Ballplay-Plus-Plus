@@ -39,6 +39,7 @@
 #include <Fonts.hpp>
 #include <Users.hpp>
 #include <PackSelector.hpp>
+#include <Game.hpp>
 
 using namespace std;
 using namespace TrickyUnits;
@@ -65,6 +66,10 @@ namespace BallPlay {
 
 	PuzPack _PuzPack::GetPack() {
 		return GetPack(_Selected);
+	}
+
+	std::string _PuzPack::Selected() {
+		return _Selected;
 	}
 
 	int _PuzPack::MaxPuzzles() {
@@ -167,6 +172,11 @@ namespace BallPlay {
 					Mini->Draw("Least moves: " + to_string(pck->BestMoves(ti)) + "; Best time: " + pck->BestTime(ti), 5, sh - 5, 0, 1);
 				}
 				TQSG_Color(255, 180, 0);
+				if (ML) {
+					_Puzzle::Load(_PuzPack::Selected(), ti);
+					SetChain(Game);
+					return true;
+				}
 			}
 			KzF->Draw(pck->Name(ti), X, Y); // When not using tags
 		}
