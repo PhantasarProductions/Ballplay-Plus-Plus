@@ -34,6 +34,9 @@
     <Filter Include="Source Files\SuperTed">
       <UniqueIdentifier>{1e3c6d40-d0d1-43cc-b8c7-e3ec4361bbf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\JCR6">
+      <UniqueIdentifier>{0e432882-aa4a-415f-9db7-a3a5f628eb17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\__main.cpp">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\SuperTed\C++ Class\headers\SuperTed_Core.hpp">
       <Filter>Header Files\SuperTed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\JCR6\headers\jcr6_core.hpp">
+      <Filter>Header Files\JCR6</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

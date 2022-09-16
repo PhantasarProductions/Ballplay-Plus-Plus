@@ -32,6 +32,9 @@
 #include <TQSG.hpp>
 #include <TQSE.hpp>
 
+// SuperTed
+#include <SuperTed_Core.hpp>
+
 // BallPlay
 #include <MainMenu.hpp>
 #include <Sinus.hpp>
@@ -40,6 +43,8 @@
 #include <Users.hpp>
 #include <PackSelector.hpp>
 #include <Game.hpp>
+
+
 
 using namespace std;
 using namespace TrickyUnits;
@@ -205,7 +210,14 @@ namespace BallPlay {
 	}
 	PuzPack _Puzzle::Pack() { return _PuzPack::GetPack(_Pack); }
 
+	static void PZLCrash(std::string err){
+		Crash("SuperTed Loading Error!\n\n" + err);
+
+	}
+
 	Puzzle _Puzzle::Load(std::string Pck, int PuzNum) {
+		SuperTed::TeddyPanicFunction = PZLCrash;
+		cout << "Request to load puzzle #" << PuzNum << " from pack " << Pck << endl;
 		auto ret{ make_shared<_Puzzle>() };
 		ret->_Pack = Pck;
 		ret->num = PuzNum;
@@ -218,7 +230,11 @@ namespace BallPlay {
 			g = TRand(255);
 			b = TRand(255);
 		} while (r + g + b < 100);
+		printf("Sinus color set to #%02x%02x%02x\n", r, g, b);
 		SinusColor(r, g, b);
+		cout << "Loading puzzle: " << ret->_Tag<<endl;
+		ret->PuzMap = SuperTed::LoadTeddy(Resource(),"Packages/"+Pck+"/Puzzles/"+ret->_Tag);
+		if (!ret->PuzMap) PZLCrash("For unknown reasons loading puzzle " + ret->_Tag + " from package '" + Pck + "' failed");
 		return ret;
 	}
 

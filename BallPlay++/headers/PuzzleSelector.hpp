@@ -71,6 +71,7 @@ namespace BallPlay {
 		int
 			num{ 0 };
 		Mission _Mission{ Mission::Unknown };
+		SuperTed::Teddy PuzMap;
 
 	public:
 		PuzPack Pack();

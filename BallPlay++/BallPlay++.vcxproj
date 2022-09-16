@@ -182,6 +182,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h" />
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zlib.h" />
+    <ClInclude Include="..\..\..\JCR6\headers\jcr6_core.hpp" />
     <ClInclude Include="..\..\..\SuperTed\C++ Class\headers\SuperTed_Core.hpp" />
     <ClInclude Include="..\..\..\TQSG\TQSA.hpp" />
     <ClInclude Include="..\..\..\TQSG\TQSE.hpp" />
