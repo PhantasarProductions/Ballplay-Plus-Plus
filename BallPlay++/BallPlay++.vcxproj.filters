@@ -28,6 +28,9 @@
     <Filter Include="Source Files\TQSG">
       <UniqueIdentifier>{5ab79938-802e-4ee3-8a74-2030aa31fbca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SuperTed">
+      <UniqueIdentifier>{628d66df-009b-48f6-934a-fb89b9c563dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\__main.cpp">
