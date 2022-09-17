@@ -91,6 +91,7 @@ namespace BallPlay {
 		int Required();
 		void DBack();
 		std::string MissionName();
+		Mission EMission();
 
 		static Puzzle Load(std::string Pck, int PuzNum);		
 		static std::map<Mission, std::string>MissionNames;
