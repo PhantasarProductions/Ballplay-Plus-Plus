@@ -69,6 +69,9 @@ namespace BallPlay {
 			Img = TQSG_LoadAutoImage(Resource(), "GFX/Game/Suit/" + Picture + ".png");
 			Img->HotBottomCenter();
 		}
+		//TQSG_Color(25, 25, 25);
+		//Img->Draw(X+2, TQSG_ScreenHeight() - 2);
+		TQSG_Color(255, 255, 255);
 		Img->Draw(X, TQSG_ScreenHeight() - 10);
 		if (!Fnt) Fnt = GetFont("conthrax-sb");
 		TQSG_Color(10, 10, 10);
