@@ -36,6 +36,7 @@
 
 namespace BallPlay {
 
+	enum class Mission { Unknown, Normal, BreakAway, BreakFree, ColorSplit, DotCollector, SaveTheGirl };
 
 	class _PuzPack;
 	class _Puzzle;
