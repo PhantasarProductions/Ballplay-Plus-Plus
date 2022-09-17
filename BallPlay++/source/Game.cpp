@@ -49,7 +49,7 @@ namespace BallPlay {
 	Puzzle PlayPuzzle{ nullptr };
 
 	static bool __Always(Puzzle P) { return true; }
-	static bool __ShowHearts(Puzzle P) { return PlayPuzzle->EMission() == Mission::Normal || PlayPuzzle->EMission()==Mission::ColorSplit; }
+	static bool __ShowHearts(Puzzle P) { return PlayPuzzle->EMission() == Mission::Normal || PlayPuzzle->EMission()==Mission::ColorSplit || PlayPuzzle->EMission() == Mission::BreakFree; }
 	static int __Hearts(Puzzle P) { return 0; }
 	static int __Clubs(Puzzle P) { return P->Required(); }
 	static int __Diamonds(Puzzle P) { return 0; }
