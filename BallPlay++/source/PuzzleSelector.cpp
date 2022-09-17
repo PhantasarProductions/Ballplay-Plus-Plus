@@ -62,6 +62,7 @@ namespace BallPlay {
 		{Mission::Normal,"Normal"},
 		{Mission::BreakAway,"Break Away"},
 		{Mission::BreakFree,"Break Free"},
+		{Mission::ColorSplit,"Color Split"},
 		{Mission::DotCollector,"Dot Collector"}
 	};
 	static string CapOnly(string A) {
@@ -294,6 +295,8 @@ namespace BallPlay {
 		if (ret->_Mission == Mission::Unknown) {
 			if (ret->PuzMap->Data["Mission"] == "Regular")
 				ret->_Mission = Mission::Normal;
+			else if (ret->PuzMap->Data["Mission"] == "Color Splitting")
+				ret->_Mission = Mission::ColorSplit;
 			else
 				Crash("Failed to parse mission: '" + ret->PuzMap->Data["Mission"]);
 		}
