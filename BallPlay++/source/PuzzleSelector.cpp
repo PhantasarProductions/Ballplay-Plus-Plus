@@ -295,7 +295,7 @@ namespace BallPlay {
 		if (ret->_Mission == Mission::Unknown) {
 			if (ret->PuzMap->Data["Mission"] == "Regular")
 				ret->_Mission = Mission::Normal;
-			else if (ret->PuzMap->Data["Mission"] == "Color Splitting")
+			else if (ret->PuzMap->Data["Mission"] == "Color Splitting") 
 				ret->_Mission = Mission::ColorSplit;
 			else
 				Crash("Failed to parse mission: '" + ret->PuzMap->Data["Mission"]);
