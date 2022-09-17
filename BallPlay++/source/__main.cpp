@@ -39,6 +39,9 @@
 // SDL2
 #include <SDL_image.h>
 
+// SuperTed
+#include <SuperTed_Draw_TQSG.hpp>
+
 // BallPlay++
 #include <builddate.h>
 #include <Resource.hpp>
@@ -58,6 +61,7 @@ int main(int cnt, char** args) {
 	TQSG_Cls();
 	TQSG_Flip(30);
 	TQSE_Init();
+	SuperTed::SuperTed_InitTQSG(Resource());
 	CheckUserStartUp();
 	ChainRun();
 	std::cout << "Unloading SDL2\n"; TQSG_Close();

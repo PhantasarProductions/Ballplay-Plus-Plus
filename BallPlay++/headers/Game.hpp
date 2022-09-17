@@ -35,6 +35,7 @@
 
 
 namespace BallPlay {
+	extern Puzzle PlayPuzzle;
 	typedef int(*SuitGetNum)(Puzzle Pz);
 	typedef bool(*SuitAllow)(Puzzle Pz);
 	class SClass {

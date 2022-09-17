@@ -37,13 +37,21 @@ using namespace std;
 using namespace TrickyUnits;
 namespace BallPlay {
 
+
+	static const char LayOrder[5][25]{
+		"FLOOR",
+		"DIRECTIONS",
+		"BOMBS",
+		"WALL",
+		"BREAK"
+	};
 	static TQSG_AutoImageFont Fnt{ nullptr };
-	static Puzzle PlayPuzzle{ nullptr };
+	Puzzle PlayPuzzle{ nullptr };
 
 	static bool __Always(Puzzle P) { return true; }
 	static bool __ShowHearts(Puzzle P) { return true; }
 	static int __Hearts(Puzzle P) { return 0; }
-	static int __Clubs(Puzzle P) { return 0; }
+	static int __Clubs(Puzzle P) { return P->Required(); }
 	static int __Diamonds(Puzzle P) { return 0; }
 	static int __Spades(Puzzle P) { return 0; }
 
@@ -55,6 +63,7 @@ namespace BallPlay {
 	}
 
 	void SClass::_Show(int X) {
+		if (!Allow(PlayPuzzle)) return;
 		if (!Img) {
 			cout << "Loading suit: " << Picture << endl;
 			Img = TQSG_LoadAutoImage(Resource(), "GFX/Game/Suit/" + Picture + ".png");
@@ -98,7 +107,18 @@ namespace BallPlay {
 		TQSG_Cls();
 		Sinus();
 		DoCheckQuit();
+		PlayPuzzle->DBack();
+		for (auto dlay : LayOrder) PlayPuzzle->DrawLayer(dlay);
 		SClass::ShowSuits();
+		TQSG_Color(0, 0, 0);
+		Fnt->Draw(PlayPuzzle->Title(),4,4);
+		TQSG_Color(255, 255, 255);
+		Fnt->Draw(PlayPuzzle->Title(), 2, 2);
+		TQSG_Color(0, 0, 0);
+		Fnt->Draw(PlayPuzzle->MissionName(), TQSG_ScreenWidth()-2, 4,1,0);
+		TQSG_Color(180,255,0);
+		Fnt->Draw(PlayPuzzle->MissionName(), TQSG_ScreenWidth() - 4, 2, 1, 0);
+
 		Flip();
 		return true;
 	}

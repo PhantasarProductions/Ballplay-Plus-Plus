@@ -69,20 +69,31 @@ namespace BallPlay {
 			_Pack{ "" },
 			_Tag{ "" };
 		int
-			num{ 0 };
+			num{ 0 },
+			PX{ 0 },
+			PY{ 0 };
+
 		Mission _Mission{ Mission::Unknown };
 		SuperTed::Teddy PuzMap;
+		TrickyUnits::TQSG_AutoImage BackImg{ nullptr };
 
 	public:
 		PuzPack Pack();
 		SuperTed::TeddyRoom PuzR();
+		void DrawLayer(std::string Lay);
 		int PixW();
 		int PixH();
 		int W();
 		int H();
 		int GridW();
 		int GridH();
+		std::string Title();
+		int Required();
+		void DBack();
+		std::string MissionName();
+
 		static Puzzle Load(std::string Pck, int PuzNum);		
+		static std::map<Mission, std::string>MissionNames;
 	};
 
 	bool PuzzleSelector();

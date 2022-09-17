@@ -58,6 +58,23 @@ namespace BallPlay {
 	std::map<std::string, PuzPack> _PuzPack::Pack{};
 	std::string _PuzPack::_Selected{ "" };
 
+	std::map<Mission, std::string> _Puzzle::MissionNames{
+		{Mission::Normal,"Normal"},
+		{Mission::BreakAway,"Break Away"},
+		{Mission::BreakFree,"Break Free"},
+		{Mission::DotCollector,"Dot Collector"}
+	};
+	static string CapOnly(string A) {
+		string ret{ "" };
+		A = Upper(A);
+		for (int i=0; i < A.size(); i++) { if (A[i] >= 'A' && A[i] <= 'Z') ret += A[i]; }
+		return ret;
+	}
+	static Mission MSCMP(std::string A) {
+		auto B{ CapOnly(A) };
+		for (auto M : _Puzzle::MissionNames) if (CapOnly(M.second) == B) return M.first;
+		return Mission::Unknown;
+	}
 	
 	void _PuzPack::SetPack(string pack) {
 		_Selected = pack;
@@ -212,6 +229,10 @@ namespace BallPlay {
 
 	SuperTed::TeddyRoom _Puzzle::PuzR() { return PuzMap->Rooms["PUZZLE"]; }
 
+	void _Puzzle::DrawLayer(std::string Lay) {
+		PuzMap->DrawLayer("PUZZLE", Lay, -PX, -PY);
+	}
+
 	int _Puzzle::PixW() { return PuzR()->PixW(); }
 	int _Puzzle::PixH() { return PuzR()->PixH(); }
 
@@ -220,6 +241,24 @@ namespace BallPlay {
 
 	int _Puzzle::GridW() { return PuzR()->GW(); }
 	int _Puzzle::GridH() { return PuzR()->GH(); }
+
+	std::string _Puzzle::Title() { return PuzMap->Data["Title"]; }
+
+	int _Puzzle::Required() {
+		return ToInt(PuzMap->Data["Required"]);
+	}
+
+	void _Puzzle::DBack() {
+		if (PuzMap->Data["Background"].size()) {
+			if (!BackImg) BackImg = TQSG_LoadAutoImage(Resource(), PuzMap->Data["Background"]);
+			BackImg->Stretch(PX, PY, PixW(), PixH());
+		} else {
+			TQSG_Color(0, 0, 0);
+			TQSG_Rect(PX, PY, PixW(), PixH());
+		}
+	}
+
+	std::string _Puzzle::MissionName() { return MissionNames[_Mission]; }
 
 	static void PZLCrash(std::string err){
 		Crash("SuperTed Loading Error!\n\n" + err);
@@ -247,6 +286,16 @@ namespace BallPlay {
 		ret->PuzMap = SuperTed::LoadTeddy(Resource(),"Packages/"+Pck+"/Puzzles/"+ret->_Tag);
 		if (!ret->PuzMap) PZLCrash("For unknown reasons loading puzzle " + ret->_Tag + " from package '" + Pck + "' failed");
 		cout << "Success. PixelFormat " << ret->PixW() << "x" << ret->PixH() << "; TileFormat:" << ret->W()<< "x"<<ret->H() <<"; Grid: "<<ret->GridW()<<"x"<<ret->GridH() << endl;
+		ret->PX = (TQSG_ScreenWidth() / 2) - (ret->PixW() / 2);
+		ret->PY = ((TQSG_ScreenHeight() - 100) / 2) - (ret->PixH() / 2);
+		ret->_Mission = MSCMP(ret->PuzMap->Data["Mission"]);
+		if (ret->_Mission == Mission::Unknown) {
+			if (ret->PuzMap->Data["Mission"] == "Regular")
+				ret->_Mission = Mission::Normal;
+			else
+				Crash("Failed to parse mission: '" + ret->PuzMap->Data["Mission"]);
+		}
+		PlayPuzzle = ret;
 		return ret;
 	}
 
