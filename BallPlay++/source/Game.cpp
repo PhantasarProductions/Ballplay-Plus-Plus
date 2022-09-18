@@ -23,20 +23,31 @@
 // 
 // Version: 22.09.17
 // EndLic
+
+#pragma region Include_C++
 #include <string>
+#pragma endregion
 
+#pragma region TQSG
 #include <TQSE.hpp>
+#pragma endregion
 
+#pragma region BallPlay_Includes
+#include <dir_obj.h>
 #include <Sinus.hpp>
 #include <Game.hpp>
 #include <Fonts.hpp>
 #include <MainMenu.hpp>
 #include <Chain.hpp>
+#pragma endregion
 
 
 
+#pragma region UsingNamespace
 using namespace std;
 using namespace TrickyUnits;
+#pragma endregion
+
 namespace BallPlay {
 
 
@@ -47,6 +58,7 @@ namespace BallPlay {
 		"WALL",
 		"BREAK"
 	};
+
 	static TQSG_AutoImageFont Fnt{ nullptr };
 	Puzzle PlayPuzzle{ nullptr };
 
@@ -101,7 +113,7 @@ namespace BallPlay {
 #pragma endregion
 
 
-#pragma region Game Buttons and stages
+#pragma region Game_buttons_and_stages
 
 	enum class GameStages {
 		PreStart, // Just show the puzzle before move
@@ -209,7 +221,7 @@ namespace BallPlay {
 
 
 
-#pragma region Game Flow
+#pragma region Game_Flow
 	void GameFlow(GameStages s){}
 #pragma endregion
 
