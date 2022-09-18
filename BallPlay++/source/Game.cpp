@@ -114,8 +114,8 @@ namespace BallPlay {
 	// Choises
 	void SetGameStage(GameStages);
 	void StartPuzzle(GameStages) { Crash("Start puzzle NOT yet implemented"); }
-	void Other(GameStages); // Function needs more data, but at least I got a header now
-	void BackToMain(GameStages) { SetGameStage(GameStages::PreStart); SetChain(MainMenu); }
+	void Other(GameStages) { SetGameStage(GameStages::PreStart); SetChain(PuzzleSelector); TQSE_Flush(); }
+	void BackToMain(GameStages) { SetGameStage(GameStages::PreStart); SetChain(MainMenu); TQSE_Flush();	}
 	void Pause(GameStages) { SetGameStage(GameStages::Pause); }
 	void Resume(GameStages) { SetGameStage(GameStages::Game); }
 	void Next(GameStages) { Crash("Next puzzle yet to be implemented"); }
@@ -143,9 +143,10 @@ namespace BallPlay {
 	public:
 		static GameStages Current;		
 		static map<GameStages, TStage> Stage;
-		GameStages Me;
+		GameStages Me{GameStages::PreStart};
 		vector<TStageButton> Button;
 		StageFunction Flow{ nullptr };
+		TStage() {} // Compiler wants it for some silly reason
 		TStage(GameStages id, StageFunction _Flow, vector<TStageButton> _Buttons) {
 			Me = id;
 			Flow = _Flow;
@@ -167,6 +168,7 @@ namespace BallPlay {
 				TQSG_Color(255, 255, 255);
 				if (my > y && my < ey && mx < 5 + B->ButImg->W()) {
 					TQSG_Color(180, 0, 255);
+					if (TQSE_MouseHit(1)) B->Reaction(Me);
 				}
 				B->ButImg->Draw(5, y);
 				ey = y;
