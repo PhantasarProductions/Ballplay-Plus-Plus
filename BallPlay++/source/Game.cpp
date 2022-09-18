@@ -378,6 +378,7 @@ namespace BallPlay {
 						cout << "No " << Tools[i].ImgTag << " picture on pack " << PlayPuzzle->PackName() << "? Let's load it then\n";
 						Tools[i].Img[PlayPuzzle->PackName()] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Tools/" + Tools[i].ImgTag + ".png");
 					}
+					if (TQSE_KeyHit((SDL_KeyCode)(i + 49))) Chosen = i;
 					if (i == Chosen) {
 						TQSG_Color(TRand(0, 255), TRand(0, 255), TRand(0, 255));
 						TQSG_Rect(x - 1, y - 1, Tools[i].Img[PlayPuzzle->PackName()]->W() + 2, Tools[i].Img[PlayPuzzle->PackName()]->H() + 2, true);
