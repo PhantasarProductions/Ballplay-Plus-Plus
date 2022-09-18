@@ -32,6 +32,11 @@
 #include <TQSE.hpp>
 #pragma endregion
 
+#pragma region TrickyUnits
+#include <TrickySTOI.hpp>
+#include <TRandom.hpp>
+#pragma endregion
+
 #pragma region BallPlay_Includes
 #include <dir_obj.h>
 #include <Sinus.hpp>
@@ -343,6 +348,66 @@ namespace BallPlay {
 #pragma endregion
 
 
+#pragma region Game_Tools
+	class GameTool {
+	public:
+		static byte Chosen;
+		static GameTool Tools[4];
+		string ImgTag{ "" };
+		map<string, TQSG_AutoImage> Img{}; // String = Pack. The picks can be different depending on the pack
+		string Layer{ "DIRECTIONS" };
+		int PlaceTileID{ 0 };
+		string FromPuzData{ "" };
+		int left{ 0 };
+		bool show{ false };
+		GameTool(string _ImgTag, int _PlaceTileID, string _FromPuzData, string _Layer = "DIRECTIONS") {
+			ImgTag = _ImgTag;
+			PlaceTileID = _PlaceTileID;
+			FromPuzData = _FromPuzData;
+			Layer = _Layer;
+		}
+
+		static void Draw() {
+			static int y{ TQSG_ScreenHeight() - 80 };
+			if (Chosen >= 4) Chosen %= 4;
+			for (int i = 0; i < 4; ++i) {
+				if (Tools[i].show) {
+					if (!Tools[Chosen].show) Chosen = i;
+					int x = 250 + (i * 65);
+					if (!Tools[i].Img.count(PlayPuzzle->PackName())) {
+						cout << "No " << Tools[i].ImgTag << " picture on pack " << PlayPuzzle->PackName() << "? Let's load it then\n";
+						Tools[i].Img[PlayPuzzle->PackName()] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Tools/" + Tools[i].ImgTag + ".png");
+					}
+					if (i == Chosen) {
+						TQSG_Color(TRand(0, 255), TRand(0, 255), TRand(0, 255));
+						TQSG_Rect(x - 1, y - 1, Tools[i].Img[PlayPuzzle->PackName()]->W() + 2, Tools[i].Img[PlayPuzzle->PackName()]->H() + 2, true);
+					}
+					TQSG_Color(255, 255, 255);
+					Tools[i].Img[PlayPuzzle->PackName()]->Draw(x, y);
+					TQSG_Color(0, 0, 0);
+					Fnt->Draw(to_string(Tools[i].left), x - 3, y + Tools[i].Img[PlayPuzzle->PackName()]->H() - 2, 2, 1);
+					TQSG_Color(255, 255, 255);
+					Fnt->Draw(to_string(Tools[i].left), x - 5, y + Tools[i].Img[PlayPuzzle->PackName()]->H() - 4, 2, 1);
+				}
+			}
+		}
+
+	};
+	byte GameTool::Chosen{ 0 };
+	GameTool GameTool::Tools[4]{
+		{"Plate1",redplate1, "Plate/"},
+		{"Plate2",redplate2, "Plate\\"},
+		{"Barrier",1,"Wall","WALL"},
+		{"Remove",0,"Remove"}
+	};
+	void Scan4Tools(){
+		for (int i = 0; i < 4;++i) {
+			GameTool::Tools[i].left = PlayPuzzle->iDat(GameTool::Tools[i].FromPuzData);
+			GameTool::Tools[i].show = GameTool::Tools[i].left > 0;
+		}
+	}
+#pragma endregion
+
 #pragma region Game_Flow
 	void GameFlow(GameStages s){}
 #pragma endregion
@@ -369,6 +434,7 @@ namespace BallPlay {
 			PlayPuzzle->DrawLayer(dlay);
 		}
 		SClass::ShowSuits();
+		GameTool::Draw();
 		TQSG_Color(0, 0, 0);
 		Fnt->Draw(PlayPuzzle->Title(),4,4);
 		TQSG_Color(255, 255, 255);
