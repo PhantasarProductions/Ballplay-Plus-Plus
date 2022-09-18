@@ -165,7 +165,7 @@ namespace BallPlay {
 					cout << "Loaded image for game button: " << B->ButFile << endl;
 				}
 				y = ey - B->ButImg->H();
-				TQSG_Color(255, 255, 255);
+				TQSG_Color(255, 255, 255); 
 				if (my > y && my < ey && mx < 5 + B->ButImg->W()) {
 					TQSG_Color(180, 0, 255);
 					if (TQSE_MouseHit(1)) B->Reaction(Me);
