@@ -267,6 +267,10 @@ namespace BallPlay {
 
 	int _Puzzle::gPX() { return PX; }
 	int _Puzzle::gPY() { return PY; }
+
+	int _Puzzle::iDat(std::string k) {
+		return ToInt(PuzMap->Data[k]);
+	}
 	
 
 	static void PZLCrash(std::string err){
