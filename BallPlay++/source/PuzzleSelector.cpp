@@ -312,6 +312,7 @@ namespace BallPlay {
 		}
 		PlayPuzzle = ret;
 		ScanObjects();
+		Scan4Tools();
 		return ret;
 	}
 
