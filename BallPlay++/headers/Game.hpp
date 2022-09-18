@@ -52,5 +52,6 @@ namespace BallPlay {
 	};
 
 
+	void ScanObjects(bool clean=true);
 	bool Game();
 }
