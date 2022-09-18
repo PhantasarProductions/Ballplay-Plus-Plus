@@ -94,7 +94,7 @@ namespace BallPlay {
 			TQSG_Color(255, 255, 255);
 			_image->Draw(X, Y());
 			if (X > cx) {
-				X = std::max(cx, X - 4);
+				X = std::max(cx, X - 5);
 				//printf("Iten %d: (%04d,%04d)\n", _index, X, Y());
 			}
 		}
