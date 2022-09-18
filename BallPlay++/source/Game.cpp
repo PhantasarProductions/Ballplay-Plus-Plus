@@ -62,11 +62,12 @@ namespace BallPlay {
 	Puzzle PlayPuzzle{ nullptr };
 
 #pragma region Kaartkleuren
+	static int CountBalls();
 	static bool __Always(Puzzle P) { return true; }
 	static bool __ShowHearts(Puzzle P) { return PlayPuzzle->EMission() == Mission::Normal || PlayPuzzle->EMission()==Mission::ColorSplit || PlayPuzzle->EMission() == Mission::BreakFree; }
 	static int __Hearts(Puzzle P) { return 0; }
 	static int __Clubs(Puzzle P) { return P->Required(); }
-	static int __Diamonds(Puzzle P) { return 0; }
+	static int __Diamonds(Puzzle P) { return CountBalls(); }
 	static int __Spades(Puzzle P) { return 0; }
 
 	SClass::SClass(std::string Pic, SuitGetNum _GetNum, SuitAllow _Allow) {
@@ -107,7 +108,7 @@ namespace BallPlay {
 		SClass("Hearts",__Hearts,__ShowHearts),
 		SClass("Clubs",__Clubs,__Always),
 		SClass("Diamonds",__Diamonds,__Always),
-		SClass("Spades",__Diamonds,__Always)
+		SClass("Spades",__Spades,__Always)
 	};
 #pragma endregion
 
@@ -225,7 +226,7 @@ namespace BallPlay {
 	class _GameObject; typedef shared_ptr<_GameObject> GameObject;
 	class _GameObject {
 	private:
-		static map<ObjTypes, TQSG_AutoImage> ImgReg;
+		static map<string,map<ObjTypes, TQSG_AutoImage>> ImgReg;
 		static GameObject _NEW() { return make_shared<_GameObject>(); }
 	public:
 		static vector<GameObject> List;
@@ -243,18 +244,19 @@ namespace BallPlay {
 			b{ 255 },
 			a{ 255 };
 		ObjDirection Direction{ ObjDirection::South };
-		TQSG_AutoImage Img() { return ImgReg[Type]; }
+		TQSG_AutoImage Img() { return ImgReg[PlayPuzzle->PackName()][Type]; }
 
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None }) {
 			auto ret{ _NEW() };
+			auto Pack{ PlayPuzzle->PackName() };
 			ret->Type = (ObjTypes)Col;
 			ret->Direction = D;
 			ret->x = x;
 			ret->y = y;
-			if (!ImgReg.count(Ball)) {
-				ImgReg[Ball] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ball.png");
-				ImgReg[RedBall] = ImgReg[Ball];
-				ImgReg[GreenBall] = ImgReg[Ball];
+			if (!ImgReg[Pack].count(Ball)) {
+				ImgReg[Pack][Ball] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ball.png");
+				ImgReg[Pack][RedBall] = ImgReg[Pack][Ball];
+				ImgReg[Pack][GreenBall] = ImgReg[Pack][Ball];
 			}
 			switch (Col) {
 			case BallColor::None:
@@ -306,13 +308,38 @@ namespace BallPlay {
 				}
 			}
 			cout << endl;
+		}
 
+		void Draw() {
+			int dx{ PlayPuzzle->gPX() + (x * PlayPuzzle->GridW()) + modx };
+			int dy{ PlayPuzzle->gPY() + (y * PlayPuzzle->GridH()) + mody };
+			TQSG_ACol(r, g, b, a);
+			Img()->Draw(dx, dy);
+			if (modx > 0) modx = max(0, modx - spdx); else if (modx < 0) modx = min(0, modx + spdx);
+			if (mody > 0) mody = max(0, mody - spdy); else if (mody < 0) mody = min(0, mody + spdy);
+		}
+		static void DrawAll() {
+			for (auto o : List) o->Draw();
 		}
 	};
-	map<ObjTypes, TQSG_AutoImage> _GameObject::ImgReg{};
+
+	map<string,map<ObjTypes, TQSG_AutoImage>> _GameObject::ImgReg{};
 	vector<GameObject> _GameObject::List{};
 
 	void ScanObjects(bool clean) { _GameObject::Scan(clean); }
+	static int CountBalls() {
+		int ret{ 0 };
+		for (auto o : _GameObject::List) {
+			switch (o->Type) {
+			case ObjTypes::Ball:
+			case ObjTypes::BallGreen:
+			case ObjTypes::BallRed:
+				ret++;
+				break;
+			}
+		}
+		return ret;
+	}
 #pragma endregion
 
 
@@ -337,7 +364,10 @@ namespace BallPlay {
 		Sinus();
 		DoCheckQuit();
 		PlayPuzzle->DBack();
-		for (auto dlay : LayOrder) PlayPuzzle->DrawLayer(dlay);
+		for (auto dlay : LayOrder) {
+			if (strcmp(dlay, "WALL") == 0) _GameObject::DrawAll();
+			PlayPuzzle->DrawLayer(dlay);
+		}
 		SClass::ShowSuits();
 		TQSG_Color(0, 0, 0);
 		Fnt->Draw(PlayPuzzle->Title(),4,4);
