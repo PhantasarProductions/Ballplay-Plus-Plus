@@ -42,7 +42,6 @@
 #pragma endregion
 
 
-
 #pragma region UsingNamespace
 using namespace std;
 using namespace TrickyUnits;
@@ -219,6 +218,102 @@ namespace BallPlay {
 
 #pragma endregion
 
+
+#pragma region Game_Objects
+	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall };
+	enum class ObjDirection { North, South, East, West };
+	class _GameObject; typedef shared_ptr<_GameObject> GameObject;
+	class _GameObject {
+	private:
+		static map<ObjTypes, TQSG_AutoImage> ImgReg;
+		static GameObject _NEW() { return make_shared<_GameObject>(); }
+	public:
+		static vector<GameObject> List;
+		ObjTypes Type{ Ball };
+		int
+			x{ 0 },
+			y{ 0 },
+			modx{ 0 },
+			mody{ 0 },
+			spdx{ 2 },
+			spdy{ 2 };
+		byte
+			r{ 255 },
+			g{ 255 },
+			b{ 255 },
+			a{ 255 };
+		ObjDirection Direction{ ObjDirection::South };
+		TQSG_AutoImage Img() { return ImgReg[Type]; }
+
+		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None }) {
+			auto ret{ _NEW() };
+			ret->Type = (ObjTypes)Col;
+			ret->Direction = D;
+			ret->x = x;
+			ret->y = y;
+			if (!ImgReg.count(Ball)) {
+				ImgReg[Ball] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ball.png");
+				ImgReg[RedBall] = ImgReg[Ball];
+				ImgReg[GreenBall] = ImgReg[Ball];
+			}
+			switch (Col) {
+			case BallColor::None:
+				break;
+			case BallColor::Red:
+				ret->r = 255;
+				ret->g = 0;
+				ret->b = 0;
+				break;
+			case BallColor::Green:
+				ret->r = 0;
+				ret->g = 255;
+				ret->b = 0;
+				break;
+			default:
+				Crash("Unknown ball color\nCan only be the result of a bug. Please report!");
+				break;
+			}
+			List.push_back(ret);
+			return ret;
+		}
+		static void Scan(bool clean=true) {
+			if (clean) List.clear();
+			uint32 obj0{ 0 };
+			for (auto iy = 0; iy < PlayPuzzle->H(); ++iy) {
+				for (auto ix = 0; ix < PlayPuzzle->W(); ++ix) {
+					if (PlayPuzzle->PuzR()->MapObjects->Value(ix, iy)) {
+						for (auto o : *PlayPuzzle->PuzR()->MapObjects->Value(ix, iy)) {
+							auto d{ ObjDirection::South };
+							if (o->Data["Direction"] == "North") d = ObjDirection::North;
+							else if (o->Data["Direction"] == "East") d = ObjDirection::East;
+							else if (o->Data["Direction"] == "West") d = ObjDirection::West;
+							switch (o->kind) {
+							case 0:
+								cout << "\x1b[31mWARNING!\x1b[0m\tObject kind 0 encountered on position (" << ix << "," << iy << ") (" << ++obj0 << ")\n";
+								break;
+							case Ball:
+								NewBall(ix, iy, d);
+								break;
+							default: {
+								char E[400];
+								sprintf_s(E, "Unknown object type: '%d'(%x) on position (%02d,%02d)!", o->kind, o->kind, ix, iy);
+								Crash(E);
+							} break;								
+							}
+						}
+					}
+					cout << "  Scanning for objects: " << List.size() << "\r";
+				}
+			}
+			cout << endl;
+
+		}
+	};
+	map<ObjTypes, TQSG_AutoImage> _GameObject::ImgReg{};
+	vector<GameObject> _GameObject::List{};
+
+	void ScanObjects(bool clean) { _GameObject::Scan(clean); }
+#pragma endregion
 
 
 #pragma region Game_Flow
