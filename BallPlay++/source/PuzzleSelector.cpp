@@ -265,6 +265,10 @@ namespace BallPlay {
 
 	Mission _Puzzle::EMission() { return _Mission; }
 
+	int _Puzzle::gPX() { return PX; }
+	int _Puzzle::gPY() { return PY; }
+	
+
 	static void PZLCrash(std::string err){
 		Crash("SuperTed Loading Error!\n\n" + err);
 
