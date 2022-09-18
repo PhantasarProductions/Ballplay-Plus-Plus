@@ -261,6 +261,8 @@ namespace BallPlay {
 
 	std::string _Puzzle::MissionName() { return MissionNames[_Mission]; }
 
+	std::string _Puzzle::PackName() { return _Pack; }
+
 	Mission _Puzzle::EMission() { return _Mission; }
 
 	static void PZLCrash(std::string err){
