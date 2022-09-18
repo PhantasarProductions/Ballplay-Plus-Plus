@@ -303,6 +303,7 @@ namespace BallPlay {
 				Crash("Failed to parse mission: '" + ret->PuzMap->Data["Mission"]);
 		}
 		PlayPuzzle = ret;
+		ScanObjects();
 		return ret;
 	}
 
