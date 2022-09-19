@@ -96,6 +96,8 @@ namespace BallPlay {
 		int gPX();
 		int gPY();
 		int iDat(std::string k);
+		int BallsIn{ 0 };
+		int BallsDestroyed{ 0 };
 
 		static Puzzle Load(std::string Pck, int PuzNum);		
 		static std::map<Mission, std::string>MissionNames;

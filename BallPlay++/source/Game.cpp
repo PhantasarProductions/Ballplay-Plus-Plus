@@ -54,6 +54,8 @@ using namespace TrickyUnits;
 
 namespace BallPlay {
 
+	static const int OWaitTicks{ 500 };
+	static int OTicks{ 0 }, PTicks{ 0 };
 
 	static const char LayOrder[5][25]{
 		"FLOOR",
@@ -70,10 +72,10 @@ namespace BallPlay {
 	static int CountBalls();
 	static bool __Always(Puzzle P) { return true; }
 	static bool __ShowHearts(Puzzle P) { return PlayPuzzle->EMission() == Mission::Normal || PlayPuzzle->EMission()==Mission::ColorSplit || PlayPuzzle->EMission() == Mission::BreakFree; }
-	static int __Hearts(Puzzle P) { return 0; }
+	static int __Hearts(Puzzle P) { return P->BallsIn; }
 	static int __Clubs(Puzzle P) { return P->Required(); }
 	static int __Diamonds(Puzzle P) { return CountBalls(); }
-	static int __Spades(Puzzle P) { return 0; }
+	static int __Spades(Puzzle P) { return P->BallsDestroyed; }
 
 	SClass::SClass(std::string Pic, SuitGetNum _GetNum, SuitAllow _Allow) {
 		Picture = Pic;
@@ -130,7 +132,7 @@ namespace BallPlay {
 	
 	// Choises
 	void SetGameStage(GameStages);
-	void StartPuzzle(GameStages) { Crash("Start puzzle NOT yet implemented"); }
+	void StartPuzzle(GameStages) { SetGameStage(GameStages::Game); TQSE_Flush(); }
 	void Other(GameStages) { SetGameStage(GameStages::PreStart); SetChain(PuzzleSelector); TQSE_Flush(); }
 	void BackToMain(GameStages) { SetGameStage(GameStages::PreStart); SetChain(MainMenu); TQSE_Flush();	}
 	void Pause(GameStages) { SetGameStage(GameStages::Pause); }
@@ -229,10 +231,13 @@ namespace BallPlay {
 	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall };
 	enum class ObjDirection { North, South, East, West };
 	class _GameObject; typedef shared_ptr<_GameObject> GameObject;
+	typedef void (*ObjectMove)(_GameObject*);
+	void RegMove(_GameObject*); void GirlMove(_GameObject*);
 	class _GameObject {
 	private:
 		static map<string,map<ObjTypes, TQSG_AutoImage>> ImgReg;
 		static GameObject _NEW() { return make_shared<_GameObject>(); }
+		ObjectMove _Move{ nullptr };
 	public:
 		static vector<GameObject> List;
 		ObjTypes Type{ Ball };
@@ -241,8 +246,8 @@ namespace BallPlay {
 			y{ 0 },
 			modx{ 0 },
 			mody{ 0 },
-			spdx{ 2 },
-			spdy{ 2 };
+			spdx{ 4 },
+			spdy{ 4 };
 		byte
 			r{ 255 },
 			g{ 255 },
@@ -251,13 +256,14 @@ namespace BallPlay {
 		ObjDirection Direction{ ObjDirection::South };
 		TQSG_AutoImage Img() { return ImgReg[PlayPuzzle->PackName()][Type]; }
 
-		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None }) {
+		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
 			auto ret{ _NEW() };
 			auto Pack{ PlayPuzzle->PackName() };
 			ret->Type = (ObjTypes)Col;
 			ret->Direction = D;
 			ret->x = x;
 			ret->y = y;
+			ret->_Move = _MoveFunction;
 			if (!ImgReg[Pack].count(Ball)) {
 				ImgReg[Pack][Ball] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ball.png");
 				ImgReg[Pack][RedBall] = ImgReg[Pack][Ball];
@@ -313,6 +319,11 @@ namespace BallPlay {
 				}
 			}
 			cout << endl;
+		}
+
+		void Move() {
+			if (!_Move) _Move = RegMove;
+			_Move(this);
 		}
 
 		void Draw() {
@@ -410,7 +421,118 @@ namespace BallPlay {
 #pragma endregion
 
 #pragma region Game_Flow
-	void GameFlow(GameStages s){}
+	bool Break(int x, int y) { 
+		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
+		auto ret{ PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y) > 0 };  
+		if (ret) PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y, 0);
+		return ret; 
+	}
+	bool Block(int x, int y) { 
+		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
+		return PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y) > 0 && PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0;
+	}
+	void RegMove(_GameObject *o){
+		// Conflict prevention on slow CPUs
+		o->modx = 0;
+		o->mody = 0; 
+		// Where to go?
+		switch (o->Direction) {
+		case ObjDirection::North:
+			if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
+				o->Direction = ObjDirection::South;
+			else {
+				o->y--;
+				o->mody = PlayPuzzle->GridH();
+				if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
+					o->Direction = ObjDirection::South;
+			}
+			break;
+		case ObjDirection::South:
+			if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
+				o->Direction = ObjDirection::North;
+			else {
+				o->y++;
+				o->mody = -PlayPuzzle->GridH();
+				if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
+					o->Direction = ObjDirection::North;
+			}
+			break;
+		case ObjDirection::West:
+			if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y - 1))
+				o->Direction = ObjDirection::East;
+			else {
+				o->x--;
+				o->modx = PlayPuzzle->GridW();
+				if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y - 1))
+					o->Direction = ObjDirection::East;
+			}
+			break;
+		case ObjDirection::East:
+			if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
+				o->Direction = ObjDirection::West;
+			else {
+				o->x++;
+				o->modx = -PlayPuzzle->GridW();
+				if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
+					o->Direction = ObjDirection::West;
+			}
+			break;
+		default:
+			Crash("Uknown direction!");
+		}
+		// Direction changes
+		switch (PlayPuzzle->PuzR()->Layers["DIRECTIONS"]->Field->Value(o->x, o->y)) {
+		case levelplate1:
+		case irreplacableplate1:
+		case userplate1:
+			if (o->Type != ObjTypes::Droid) {
+				switch (o->Direction) { // Plate /
+				case ObjDirection::North: if(!Block(o->x+1,o->y)) o->Direction = ObjDirection::East; break;
+				case ObjDirection::East: if (!Block(o->x, o->y - 1)) o->Direction = ObjDirection::North; break;
+				case ObjDirection::South: if (!Block(o->x - 1, o->y)) o->Direction = ObjDirection::West; break;
+				case ObjDirection::West: if (!Block(o->x, o->y + 1)) o->Direction = ObjDirection::South; break;
+				}
+			}
+			break;
+		case levelplate2:
+		case irreplacableplate2:
+		case userplate2:
+			if (o->Type != ObjTypes::Droid) {
+				switch (o->Direction) { // Plate /
+				case ObjDirection::North: if (!Block(o->x - 1, o->y)) o->Direction = ObjDirection::West; break;
+				case ObjDirection::East: if (!Block(o->x, o->y + 1)) o->Direction = ObjDirection::South; break;
+				case ObjDirection::South: if (!Block(o->x + 1, o->y)) o->Direction = ObjDirection::East; break;
+				case ObjDirection::West: if (!Block(o->x, o->y - 1)) o->Direction = ObjDirection::North; break;
+				}
+			}
+			break;
+		case arrowup: o->Direction = ObjDirection::North; break;
+		case arrowdown: o->Direction = ObjDirection::South; break;
+		case arrowleft: o->Direction = ObjDirection::West; break;
+		case arrowright: o->Direction = ObjDirection::East; break;
+		case droidarrowup: if (o->Type==ObjTypes::Droid) o->Direction = ObjDirection::North; break;
+		case droidarrowdown: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::South; break;
+		case droidarrowleft: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::West; break;
+		case droidarrowright: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::East; break;
+
+		}
+	}
+
+	void GirlMove(_GameObject* o) { Crash("Moving girls not yet supported"); }
+
+	void GameFlow(GameStages s){
+		// Init Ticks
+		if (!OTicks) OTicks = SDL_GetTicks();
+		// Process Ticks
+		PTicks = SDL_GetTicks();
+		// Move when minimal amount of ticks have passed
+		if (abs(PTicks - OTicks > OWaitTicks)) {
+			for (auto o : _GameObject::List) o->Move();
+			OTicks = PTicks;
+		}
+		// Has the goal been reached?
+		// TODO: Code!
+	}
 #pragma endregion
 
 
@@ -444,6 +566,7 @@ namespace BallPlay {
 		Fnt->Draw(PlayPuzzle->MissionName(), TQSG_ScreenWidth()-2, 4,1,0);
 		TQSG_Color(180,255,0);
 		Fnt->Draw(PlayPuzzle->MissionName(), TQSG_ScreenWidth() - 4, 2, 1, 0);
+		TStage::Stage[TStage::Current].Flow(TStage::Current);
 		TStage::Stage[TStage::Current].HandleButtons();
 		Flip();
 		return true;
