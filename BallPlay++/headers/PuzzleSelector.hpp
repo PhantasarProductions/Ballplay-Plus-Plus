@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.19
+// Version: 22.09.20
 // EndLic
 #pragma once
 // C++
@@ -98,7 +98,14 @@ namespace BallPlay {
 		int iDat(std::string k);
 		int BallsIn{ 0 };
 		int BallsDestroyed{ 0 };
+		int Next();		
+		TrickyUnits::uint32 Time{ 0 };
+		TrickyUnits::uint32 Moves{ 0 };
+		void Solved(bool val = true);
+		void BestTime(TrickyUnits::uint32 i);
+		void BestMoves(TrickyUnits::uint32 i);
 
+		void Reload();
 		static Puzzle Load(std::string Pck, int PuzNum);		
 		static std::map<Mission, std::string>MissionNames;
 	};

@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.19
+// Version: 22.09.20
 // EndLic
 // C++
 #include <map>
@@ -157,7 +157,7 @@ namespace BallPlay {
 		static auto
 			KzF{ GetFont("conthrax-sb") },
 			Mini{ GetFont("Mini") };
-		static auto Vink{ TQSG_LoadAutoImage("GFX/PuzzleSelector/Vink.png") };
+		static TQSG_AutoImage Vink{ nullptr };
 		bool ML{ TQSE_MouseHit(1) };
 		TQSG_Cls();
 		TQSE_Poll();
@@ -178,9 +178,16 @@ namespace BallPlay {
 				X{( W * col)+30 },
 				Y{ (row * 30)+150 };
 			TQSG_Color(255, 255, 255);
-			if (pck->Solved(ti)) Vink->Draw(X - 30, Y);
-			//printf("(%04d,%04d) - #%02d - %s: %s\n", X, Y, ti, pck->Tag(ti).c_str(), pck->Name(ti).c_str());
-			//KzF->Draw(pck->Tag(ti), X, Y); // Debug only!
+			if (pck->Solved(ti)) {
+				if (!Vink) {
+					cout << "Loading: Vink\n";
+					Vink=TQSG_LoadAutoImage(Resource(), "GFX/PuzzleSelector/Vink.png");
+				}
+				Vink->Draw(X - 30, Y);
+				TQSG_Color(200, 255, 200);
+				//printf("(%04d,%04d) - #%02d - %s: %s\n", X, Y, ti, pck->Tag(ti).c_str(), pck->Name(ti).c_str());
+				//KzF->Draw(pck->Tag(ti), X, Y); // Debug only!
+			} else
 			TQSG_Color(255, 255, 255);
 			if (MX > X - 30 && MY > Y && MX < X + W && MY < Y + 30) {
 				hover = true;
@@ -271,12 +278,30 @@ namespace BallPlay {
 	int _Puzzle::iDat(std::string k) {
 		return ToInt(PuzMap->Data[k]);
 	}
+
+	int _Puzzle::Next() {
+		return Pack()->Next(num);
+	}
 	
 
 	static void PZLCrash(std::string err){
 		Crash("SuperTed Loading Error!\n\n" + err);
 
 	}
+
+	void _Puzzle::Solved(bool val) {
+		auto u{ _User::Get() };
+		if (val)
+			u->Solved(_Pack, _Tag, u->Solved(_Pack, _Tag)+1);		
+	}
+
+	void _Puzzle::BestTime(uint32 i) {
+		_User::Get()->BestTime(_Pack, _Tag, i);
+	}
+
+	void _Puzzle::BestMoves(TrickyUnits::uint32 i) { _User::Get()->BestMoves(_Pack, _Tag, i); }
+
+	void _Puzzle::Reload() { Load(_Pack, num); }
 
 	Puzzle _Puzzle::Load(std::string Pck, int PuzNum) {
 		SuperTed::TeddyPanicFunction = PZLCrash;
