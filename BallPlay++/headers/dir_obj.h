@@ -63,7 +63,12 @@ namespace BallPlay {
 			greenexit = 0x71,
 			redexit = 0x72, 
 			laser = 0xf0,
-			lasertrigger = 0xf1
+			lasertrigger = 0xf1,
+			Exit = 0x70,
+			ExitGreen = 0x71,
+			GreenExit = 0x71,
+			ExitRed = 0x72,
+			RedExit = 0x72
 		};
 
 		enum ObjTypes {
@@ -75,13 +80,9 @@ namespace BallPlay {
 			BallRed = 0x03,
 			RedBall = 0x03,
 			Ghost = 0x12,
-			Droid = 0x11,
+			Droid = 0x11
 
-			Exit = 0x70,
-			ExitGreen = 0x71,
-			GreenExit = 0x71,
-			ExitRed = 0x72,
-			ExitGreen = 0x72
+		
 		};
 
 #ifdef __cplusplus
