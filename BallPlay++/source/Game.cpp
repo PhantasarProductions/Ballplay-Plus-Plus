@@ -514,7 +514,6 @@ namespace BallPlay {
 		case droidarrowdown: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::South; break;
 		case droidarrowleft: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::West; break;
 		case droidarrowright: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::East; break;
-
 		}
 	}
 
