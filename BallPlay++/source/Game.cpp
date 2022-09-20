@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.19
+// Version: 22.09.20
 // EndLic
 
 #pragma region Include_C++
@@ -35,6 +35,7 @@
 #pragma region TrickyUnits
 #include <TrickySTOI.hpp>
 #include <TRandom.hpp>
+#include <TrickyTime.hpp>
 #pragma endregion
 
 #pragma region BallPlay_Includes
@@ -44,6 +45,7 @@
 #include <Fonts.hpp>
 #include <MainMenu.hpp>
 #include <Chain.hpp>
+#include <Users.hpp>
 #pragma endregion
 
 
@@ -137,12 +139,41 @@ namespace BallPlay {
 	void BackToMain(GameStages) { SetGameStage(GameStages::PreStart); SetChain(MainMenu); TQSE_Flush();	}
 	void Pause(GameStages) { SetGameStage(GameStages::Pause); }
 	void Resume(GameStages) { SetGameStage(GameStages::Game); }
-	void Next(GameStages) { Crash("Next puzzle yet to be implemented"); }
-	void Again(GameStages) { Crash("Again same puzzle yet to be implented"); }
+	void Next(GameStages) {  
+		_Puzzle::Load(PlayPuzzle->PackName(),PlayPuzzle->Next());
+		SetGameStage(GameStages::PreStart);
+	}
+	void Again(GameStages) { 
+		PlayPuzzle->Reload();
+		SetGameStage(GameStages::PreStart);
+	}
 	void Forfeit(GameStages) { if(TQSE_Yes("Do you really want to forfeit this puzzle?")) SetGameStage(GameStages::Fail); }
 
 	// Flows
-	void EmptyFlow(GameStages) {}
+	void EmptyFlow(GameStages s) {
+		static int MdX{ TQSG_ScreenWidth() / 2 };
+		TQSG_AutoImage
+			PZ_Success{ nullptr },
+			PZ_Fail{ nullptr },
+			PZ_Pause{ nullptr };
+		TQSG_Color(255, 255, 255);
+		switch (s) {
+		case GameStages::PreStart:
+			break;
+		case GameStages::Fail:
+			if (!PZ_Fail) PZ_Fail = TQSG_LoadAutoImage(Resource(), "GFX/Game/Result/Failed.png");
+			PZ_Fail->Draw(MdX - (PZ_Fail->W() / 2), 50);
+			break;
+		case GameStages::Success:
+			if (!PZ_Success) PZ_Success = TQSG_LoadAutoImage(Resource(), "GFX/Game/Result/Success.png");
+			PZ_Success->Draw(MdX - (PZ_Success->W() / 2), 50);
+			break;
+		case GameStages::Pause:
+			if (!PZ_Pause) PZ_Pause = TQSG_LoadAutoImage(Resource(), "GFX/Game/Result/Paused.png");
+			PZ_Pause->Draw(MdX - (PZ_Pause->W() / 2), 50);
+			break;
+		}
+	}
 	void GameFlow(GameStages);
 	
 
@@ -207,7 +238,7 @@ namespace BallPlay {
 			make_shared<_TStageButton>("Resume",Resume) }
 			} },
 		{GameStages::Game,{GameStages::Game,GameFlow,{
-			make_shared<_TStageButton>("Forfeit",Forfeit)	,
+			make_shared<_TStageButton>("Give Up",Forfeit)	,
 			make_shared<_TStageButton>("Pause",Pause)}
 			} },
 		{GameStages::Success,{GameStages::Success,EmptyFlow,{
@@ -240,6 +271,7 @@ namespace BallPlay {
 		ObjectMove _Move{ nullptr };
 	public:
 		static vector<GameObject> List;
+		bool Removed{ false };
 		ObjTypes Type{ Ball };
 		int
 			x{ 0 },
@@ -335,7 +367,7 @@ namespace BallPlay {
 			if (mody > 0) mody = max(0, mody - spdy); else if (mody < 0) mody = min(0, mody + spdy);
 		}
 		static void DrawAll() {
-			for (auto o : List) o->Draw();
+			for (auto o : List) if (!o->Removed) o->Draw();
 		}
 	};
 
@@ -346,12 +378,14 @@ namespace BallPlay {
 	static int CountBalls() {
 		int ret{ 0 };
 		for (auto o : _GameObject::List) {
-			switch (o->Type) {
-			case ObjTypes::Ball:
-			case ObjTypes::BallGreen:
-			case ObjTypes::BallRed:
-				ret++;
-				break;
+			if (!o->Removed) {
+				switch (o->Type) {
+				case ObjTypes::Ball:
+				case ObjTypes::BallGreen:
+				case ObjTypes::BallRed:
+					ret++;
+					break;
+				}
 			}
 		}
 		return ret;
@@ -380,6 +414,10 @@ namespace BallPlay {
 
 		static void Draw() {
 			static int y{ TQSG_ScreenHeight() - 80 };
+			int
+				MX{ TQSE_MouseX() },
+				MY{ TQSE_MouseY() };
+			bool ML{ TQSE_MouseHit(1) };
 			if (Chosen >= 4) Chosen %= 4;
 			for (int i = 0; i < 4; ++i) {
 				if (Tools[i].show) {
@@ -390,6 +428,7 @@ namespace BallPlay {
 						Tools[i].Img[PlayPuzzle->PackName()] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Tools/" + Tools[i].ImgTag + ".png");
 					}
 					if (TQSE_KeyHit((SDL_KeyCode)(i + 49))) Chosen = i;
+					if (MX > x && MY > y && MX < x + Tools[i].Img[PlayPuzzle->PackName()]->W() && MY < y + Tools[i].Img[PlayPuzzle->PackName()]->W() && ML) Chosen = i;
 					if (i == Chosen) {
 						TQSG_Color(TRand(0, 255), TRand(0, 255), TRand(0, 255));
 						TQSG_Rect(x - 1, y - 1, Tools[i].Img[PlayPuzzle->PackName()]->W() + 2, Tools[i].Img[PlayPuzzle->PackName()]->H() + 2, true);
@@ -431,10 +470,16 @@ namespace BallPlay {
 		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
 		return PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y) > 0 && PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0;
 	}
+	void Finished(_GameObject* o) {
+		o->Removed = true;
+		PlayPuzzle->BallsIn++;
+	}
+
 	void RegMove(_GameObject *o){
 		// Conflict prevention on slow CPUs
 		o->modx = 0;
 		o->mody = 0; 
+		if (o->Removed) return;
 		// Where to go?
 		switch (o->Direction) {
 		case ObjDirection::North:
@@ -514,10 +559,33 @@ namespace BallPlay {
 		case droidarrowdown: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::South; break;
 		case droidarrowleft: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::West; break;
 		case droidarrowright: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::East; break;
+
+		case Exit: if (o->Type == ObjTypes::Ball)  Finished(o);
 		}
 	}
 
 	void GirlMove(_GameObject* o) { Crash("Moving girls not yet supported"); }
+
+	void EndPuzzle() {
+		bool success{ false };
+		switch (PlayPuzzle->EMission()) {
+		case Mission::Normal:
+		case Mission::BreakFree:
+			success = PlayPuzzle->BallsIn >= PlayPuzzle->Required();
+			break;
+		default:
+			success = CountBalls() >= PlayPuzzle->Required();
+			break;
+		}
+		if (success) {
+			auto u{ _User::Get() };
+			SetGameStage(GameStages::Success);
+			PlayPuzzle->Solved();
+			PlayPuzzle->BestTime(PlayPuzzle->Time);
+			PlayPuzzle->BestMoves(PlayPuzzle->Moves);
+		} else
+			SetGameStage(GameStages::Fail);
+	}
 
 	void GameFlow(GameStages s){
 		// Init Ticks
@@ -530,7 +598,16 @@ namespace BallPlay {
 			OTicks = PTicks;
 		}
 		// Has the goal been reached?
-		// TODO: Code!
+		if (CountBalls() <= 0) { EndPuzzle(); return; }
+		// TODO: Missions with other objectives like Break-Away and Dot Collector
+		// Time
+		static auto ot{ CurrentTime() };
+		auto ct{ CurrentTime() };
+		//cout << "ot" << ot << "\tct" << ct << endl; // debug only
+		if (ct != ot) {
+			ot = ct;
+			PlayPuzzle->Time++;
+		}
 	}
 #pragma endregion
 
@@ -561,6 +638,14 @@ namespace BallPlay {
 		Fnt->Draw(PlayPuzzle->Title(),4,4);
 		TQSG_Color(255, 255, 255);
 		Fnt->Draw(PlayPuzzle->Title(), 2, 2);
+
+		auto STime{ _User::Sec2Time(PlayPuzzle->Time) };
+		TQSG_Color(0, 0, 0);
+		Fnt->Draw(STime, (TQSG_ScreenWidth()/2)+2, 4,2);
+		TQSG_Color(0, 180, 255);
+		Fnt->Draw(STime, (TQSG_ScreenWidth() / 2), 2,2);
+
+
 		TQSG_Color(0, 0, 0);
 		Fnt->Draw(PlayPuzzle->MissionName(), TQSG_ScreenWidth()-2, 4,1,0);
 		TQSG_Color(180,255,0);
