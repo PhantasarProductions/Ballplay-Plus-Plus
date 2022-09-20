@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.14
+// Version: 22.09.20
 // EndLic
 #include <Users.hpp>
 #include <Config.hpp>
@@ -74,12 +74,12 @@ namespace BallPlay {
 		else if (_mins)
 			sprintf_s(ret, "%d:%02d", _mins, _secs);
 		else
-			sprintf_s(ret, "%s", _secs);
+			sprintf_s(ret, "%d", _secs);
 		return ret;
 	}
 
 	int _User::Solved(std::string pack, std::string puzzle) {
-		return ToInt(Data.Value(string("PackData_")+pack, puzzle + "_Soved"));
+		return ToInt(Data.Value(string("PackData_")+pack, puzzle + "_Solved"));
 	}
 
 	void _User::Solved(std::string pack, std::string puzzle, int Value) {		
