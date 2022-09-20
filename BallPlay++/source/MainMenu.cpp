@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.19
+// Version: 22.09.20
 // EndLic
 #include <Chain.hpp>
 #include <MainMenu.hpp>
@@ -94,7 +94,7 @@ namespace BallPlay {
 			TQSG_Color(255, 255, 255);
 			_image->Draw(X, Y());
 			if (X > cx) {
-				X = std::max(cx, X - 5);
+				X = std::max(cx, X - 6);
 				//printf("Iten %d: (%04d,%04d)\n", _index, X, Y());
 			}
 		}
