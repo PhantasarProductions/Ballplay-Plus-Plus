@@ -36,6 +36,8 @@
 #include <TrickySTOI.hpp>
 #include <TRandom.hpp>
 #include <TrickyTime.hpp>
+#include <TrickyMath.hpp>
+#include <TrickyLinkedList.hpp>
 #pragma endregion
 
 #pragma region BallPlay_Includes
@@ -132,7 +134,7 @@ namespace BallPlay {
 		Fail
 	};
 	
-	// Choises
+	// Choices
 	void SetGameStage(GameStages);
 	void StartPuzzle(GameStages) { SetGameStage(GameStages::Game); TQSE_Flush(); }
 	void Other(GameStages) { SetGameStage(GameStages::PreStart); SetChain(PuzzleSelector); TQSE_Flush(); }
@@ -257,6 +259,62 @@ namespace BallPlay {
 
 #pragma endregion
 
+#pragma region Explosions
+	class _Explosion; typedef shared_ptr<_Explosion> Explosion;
+	class _Explosion {
+		static TQSG_AutoImage Pics;
+		static int Teller;
+		int ID{ Teller++ };
+	public:
+		
+		const int MaxFrame{ 16 };
+		const int MaxSkip{ 2 };
+		int 
+			x{ 0 }, y{ 0 },
+			Skip{ 0 },
+			Frame{ 0 };
+		static TList<Explosion> Lijst;
+		static Explosion NEW(int x, int y,bool pure=false) {
+			int dx, dy;
+			if (pure) { dx = x; dy = y; }
+			else {
+				dx = (x * PlayPuzzle->GridW()) + (PlayPuzzle->GridW() / 2) + PlayPuzzle->gPX();
+				dy = (y * PlayPuzzle->GridH()) + (PlayPuzzle->GridH() / 2) + PlayPuzzle->gPY();
+			}
+			auto ret{ make_shared <_Explosion>() };
+			ret->x = dx;
+			ret->y = dy;
+			if (!Pics) {
+				cout << "Loading explosions picture!\n";
+				Pics = TQSG_LoadAutoImage(Resource(), "GFX/Game/Effect/Explosion.jpbf");
+				Pics->HotCenter();
+			}
+			cout << "Explosion #" << ret->ID << " ("<<dx<<","<<dy<<") initiated!\n";
+			Lijst += ret;		
+			return ret;
+		}
+
+		static void Run() {
+			//cout << "Start!\n";
+			TLFORA(Lijst, EL) {
+				//cout << "Explosion loop!\n"; // DEBUG! Making sure no illegal loops come here!
+				auto E{ EL->Obj };
+				if (E->Frame >= E->MaxFrame)
+					EL->UnLink();
+				else {
+					TQSG_Color(255, 255, 255);
+					Pics->Draw(E->x, E->y, E->Frame);
+					E->Skip = (++E->Skip) % E->MaxSkip;
+					if (E->Skip == 0) E->Frame++;
+				}
+			}
+		}
+		~_Explosion() { cout << "Disposed explosion #" << ID << endl; }
+	};
+	TList<Explosion> _Explosion::Lijst;
+	TQSG_AutoImage _Explosion::Pics{ nullptr };
+	int _Explosion::Teller{ 0 };
+#pragma endregion
 
 #pragma region Game_Objects
 	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall };
@@ -285,13 +343,16 @@ namespace BallPlay {
 			g{ 255 },
 			b{ 255 },
 			a{ 255 };
+		BallColor Col{ BallColor::None }; // Only used for exit scans
 		ObjDirection Direction{ ObjDirection::South };
 		TQSG_AutoImage Img() { return ImgReg[PlayPuzzle->PackName()][Type]; }
 
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
 			auto ret{ _NEW() };
 			auto Pack{ PlayPuzzle->PackName() };
-			ret->Type = (ObjTypes)Col;
+			//ret->Type = (ObjTypes)Col;
+			ret->Type = Ball;
+			ret->Col = Col;
 			ret->Direction = D;
 			ret->x = x;
 			ret->y = y;
@@ -338,6 +399,12 @@ namespace BallPlay {
 								break;
 							case Ball:
 								NewBall(ix, iy, d);
+								break;
+							case GreenBall:
+								NewBall(ix, iy, d, BallColor::Green);
+								break;
+							case RedBall:
+								NewBall(ix, iy, d, BallColor::Red);
 								break;
 							default: {
 								char E[400];
@@ -388,6 +455,14 @@ namespace BallPlay {
 				}
 			}
 		}
+		return ret;
+	}
+	static int CountBreakBlocks() {
+		int ret{ 0 };
+		for (uint32 y = 0; y < PlayPuzzle->H(); y++)
+			for (uint32 x = 0; x < PlayPuzzle->W(); x++)
+				if (PlayPuzzle->PuzR()->LayVal("BREAK", x, y))
+					ret++;
 		return ret;
 	}
 #pragma endregion
@@ -462,23 +537,40 @@ namespace BallPlay {
 #pragma region Game_Flow
 	bool Break(int x, int y) { 
 		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
-		auto ret{ PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y) > 0 };  
-		if (ret) PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y, 0);
+		auto ret{ PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0 };  
+		if (ret) {
+			PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y, 0);
+			if (PlayPuzzle->EMission() == Mission::BreakFree && CountBreakBlocks() == 0) PlayPuzzle->PuzR()->LayVal("DIRECTIONS", x, y, normalexit);
+		}
 		return ret; 
 	}
 	bool Block(int x, int y) { 
 		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
-		return PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y) > 0 && PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0;
+		/*		
+		TQSG_Color(255, 255, 255); Fnt->Draw(to_string(PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y)), x * 40, y * 40);
+		TQSG_Color(255, 180,0); Fnt->Draw(to_string(PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y)), x * 40, (y * 40)+20);
+		//*/
+		return PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y) > 0;//&& PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0;
 	}
 	void Finished(_GameObject* o) {
 		o->Removed = true;
 		PlayPuzzle->BallsIn++;
 	}
 
-	void RegMove(_GameObject *o){
+	void Destroy(_GameObject* o) {
+		if (o->Type == Ball) PlayPuzzle->BallsDestroyed++;
+		o->Removed = true;
+	}
+
+	void Bomb(_GameObject* o) {
+		_Explosion::NEW(o->x, o->y);
+		Destroy(o);
+	}
+
+	void RegMove(_GameObject* o) {
 		// Conflict prevention on slow CPUs
 		o->modx = 0;
-		o->mody = 0; 
+		o->mody = 0;
 		if (o->Removed) return;
 		// Where to go?
 		switch (o->Direction) {
@@ -488,8 +580,8 @@ namespace BallPlay {
 			else {
 				o->y--;
 				o->mody = PlayPuzzle->GridH();
-				if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
-					o->Direction = ObjDirection::South;
+				//if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
+				//	o->Direction = ObjDirection::South;
 			}
 			break;
 		case ObjDirection::South:
@@ -498,18 +590,18 @@ namespace BallPlay {
 			else {
 				o->y++;
 				o->mody = -PlayPuzzle->GridH();
-				if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
-					o->Direction = ObjDirection::North;
+				//if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
+				//	o->Direction = ObjDirection::North;
 			}
 			break;
 		case ObjDirection::West:
-			if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y - 1))
+			if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y))
 				o->Direction = ObjDirection::East;
 			else {
 				o->x--;
 				o->modx = PlayPuzzle->GridW();
-				if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y - 1))
-					o->Direction = ObjDirection::East;
+				//if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y - 1))
+				//	o->Direction = ObjDirection::East;
 			}
 			break;
 		case ObjDirection::East:
@@ -518,12 +610,12 @@ namespace BallPlay {
 			else {
 				o->x++;
 				o->modx = -PlayPuzzle->GridW();
-				if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
-					o->Direction = ObjDirection::West;
+				//if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
+				//	o->Direction = ObjDirection::West;
 			}
 			break;
 		default:
-			Crash("Uknown direction!");
+			Crash("(M)Uknown direction!");
 		}
 		// Direction changes
 		switch (PlayPuzzle->PuzR()->Layers["DIRECTIONS"]->Field->Value(o->x, o->y)) {
@@ -532,7 +624,7 @@ namespace BallPlay {
 		case userplate1:
 			if (o->Type != ObjTypes::Droid) {
 				switch (o->Direction) { // Plate /
-				case ObjDirection::North: if(!Block(o->x+1,o->y)) o->Direction = ObjDirection::East; break;
+				case ObjDirection::North: if (!Block(o->x + 1, o->y)) o->Direction = ObjDirection::East; break;
 				case ObjDirection::East: if (!Block(o->x, o->y - 1)) o->Direction = ObjDirection::North; break;
 				case ObjDirection::South: if (!Block(o->x - 1, o->y)) o->Direction = ObjDirection::West; break;
 				case ObjDirection::West: if (!Block(o->x, o->y + 1)) o->Direction = ObjDirection::South; break;
@@ -551,17 +643,44 @@ namespace BallPlay {
 				}
 			}
 			break;
-		case arrowup: o->Direction = ObjDirection::North; break;
-		case arrowdown: o->Direction = ObjDirection::South; break;
-		case arrowleft: o->Direction = ObjDirection::West; break;
-		case arrowright: o->Direction = ObjDirection::East; break;
-		case droidarrowup: if (o->Type==ObjTypes::Droid) o->Direction = ObjDirection::North; break;
-		case droidarrowdown: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::South; break;
-		case droidarrowleft: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::West; break;
-		case droidarrowright: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::East; break;
+		case arrowup: o->Direction = ObjDirection::North; return;
+		case arrowdown: o->Direction = ObjDirection::South; return;
+		case arrowleft: o->Direction = ObjDirection::West; return;
+		case arrowright: o->Direction = ObjDirection::East; return;
+		case droidarrowup: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::North; return;
+		case droidarrowdown: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::South; return;
+		case droidarrowleft: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::West; return;
+		case droidarrowright: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::East; return;
 
-		case Exit: if (o->Type == ObjTypes::Ball)  Finished(o);
+		case Exit: if (o->Type == ObjTypes::Ball && o->Col == BallColor::None)  Finished(o); break;
+		case ExitGreen: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Green) Finished(o); else if (o->Col != BallColor::None) Destroy(o); break;
+		case ExitRed: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Red) Finished(o); else if (o->Col != BallColor::None) Destroy(o); break;
 		}
+
+		switch (o->Direction) {
+		case ObjDirection::North:
+			if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
+				o->Direction = ObjDirection::South;
+			break;
+		case ObjDirection::South:
+			if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
+				o->Direction = ObjDirection::North;
+			break;
+		case ObjDirection::West:
+			if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y))
+				o->Direction = ObjDirection::East;
+			break;
+		case ObjDirection::East:
+			if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
+				o->Direction = ObjDirection::West;
+			break;
+		default:
+
+			Crash("Uknown direction! (B)");
+			break;
+		}
+
+
 	}
 
 	void GirlMove(_GameObject* o) { Crash("Moving girls not yet supported"); }
@@ -571,6 +690,7 @@ namespace BallPlay {
 		switch (PlayPuzzle->EMission()) {
 		case Mission::Normal:
 		case Mission::BreakFree:
+		case Mission::ColorSplit:
 			success = PlayPuzzle->BallsIn >= PlayPuzzle->Required();
 			break;
 		default:
@@ -587,6 +707,42 @@ namespace BallPlay {
 			SetGameStage(GameStages::Fail);
 	}
 
+	bool SpotIsClear(int x, int y,bool fullclear=false) {
+		auto PFV{ PlayPuzzle->PuzR() };
+		auto DV{ PFV->LayVal("DIRECTIONS",x,y) };
+		/*if*/ return !(
+			PFV->Layers["WALL"]->Field->Value(x, y) ||
+			PFV->Layers["BREAK"]->Field->Value(x, y) ||
+			PFV->Layers["BREAK"]->Field->Value(x, y) ||
+			PFV->Layers["TRANS"]->Field->Value(x, y) ||
+			PFV->Layers["DEATH"]->Field->Value(x, y) ||
+			(PFV->LayVal("DIRECTIONS", x, y) && fullclear) ||
+			(DV != 0 && DV != userplate1 && DV != userplate2 && DV != levelplate1 && DV != levelplate2)
+			); //return false;
+		//return true;
+	}
+
+	void TileCheck(GameStages s) {
+		int
+			MX{ TQSE_MouseX() - PlayPuzzle->gPX() },
+			MY{ TQSE_MouseY() - PlayPuzzle->gPY() },
+			TX{ MX / PlayPuzzle->GridW() },
+			TY{ MY / PlayPuzzle->GridH() };
+		if (TX < 0 || TY < 0 || TX >= PlayPuzzle->W() || TY >= PlayPuzzle->H()) return;
+		int
+			r{ (int)(127 + (DegSin((double)SDL_GetTicks() / 5) * 127)) },
+			g{ (int)(127 + (DegCos((double)SDL_GetTicks() / 5) * 127)) },
+			b{ 0 };
+		TQSG_Color(r, g, b);
+		TQSG_Rect(TX * PlayPuzzle->GridW() + PlayPuzzle->gPX(), TY * PlayPuzzle->GridH() + PlayPuzzle->gPY(), PlayPuzzle->GridW(), PlayPuzzle->GridH(), true);
+		if (s != GameStages::Game) return;
+		if (TQSE_MouseHit(1) && SpotIsClear(TX, TY) && GameTool::Tools[GameTool::Chosen].left) {
+			GameTool::Tools[GameTool::Chosen].left--;
+			PlayPuzzle->PuzR()->LayVal("DIRECTIONS",TX, TY, GameTool::Tools[GameTool::Chosen].PlaceTileID);
+			PlayPuzzle->Moves++;
+		}
+	}
+
 	void GameFlow(GameStages s){
 		// Init Ticks
 		if (!OTicks) OTicks = SDL_GetTicks();
@@ -594,9 +750,22 @@ namespace BallPlay {
 		PTicks = SDL_GetTicks();
 		// Move when minimal amount of ticks have passed
 		if (abs(PTicks - OTicks > OWaitTicks)) {
-			for (auto o : _GameObject::List) o->Move();
+			for (auto o : _GameObject::List) {
+				o->Move();
+				if (PlayPuzzle->PuzR()->LayVal("BOMBS", o->x, o->y)) {
+					Bomb(o.get());
+					PlayPuzzle->PuzR()->LayVal("BOMBS", o->x, o->y, 0);
+				}
+			}
 			OTicks = PTicks;
 		}
+		_Explosion::Run();
+		/* DEBUG ONLY
+		for (int y = 0; y < PlayPuzzle->H(); y++) for (int x = 0; x < PlayPuzzle->W(); x++) {
+			TQSG_Color(255, 255, 255); Fnt->Draw(to_string(PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y)), x * 40, y * 40);
+			TQSG_Color(255, 180, 0); Fnt->Draw(to_string(PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y)), x * 40, (y * 40) + 20);
+		}
+		//*/
 		// Has the goal been reached?
 		if (CountBalls() <= 0) { EndPuzzle(); return; }
 		// TODO: Missions with other objectives like Break-Away and Dot Collector
@@ -632,6 +801,7 @@ namespace BallPlay {
 			if (strcmp(dlay, "WALL") == 0) _GameObject::DrawAll();
 			PlayPuzzle->DrawLayer(dlay);
 		}
+		TileCheck(TStage::Current);
 		SClass::ShowSuits();
 		GameTool::Draw();
 		TQSG_Color(0, 0, 0);
@@ -644,6 +814,23 @@ namespace BallPlay {
 		Fnt->Draw(STime, (TQSG_ScreenWidth()/2)+2, 4,2);
 		TQSG_Color(0, 180, 255);
 		Fnt->Draw(STime, (TQSG_ScreenWidth() / 2), 2,2);
+
+		if (PlayPuzzle->EMission() == Mission::BreakAway || PlayPuzzle->EMission() == Mission::BreakFree) {
+			auto
+				x{ (TQSG_ScreenWidth() / 4) * 3 },
+				t{ CountBreakBlocks() };
+			char show[300];
+			switch (t) {
+			case 0: show[0] = 0; break;
+			case 1: strcpy_s(show, "1 tile"); break;
+			default: sprintf_s(show, "%d tiles", t); break;
+			}
+			TQSG_Color(0, 0, 0);
+			Fnt->Draw(show, x + 2, 4, 2);
+			TQSG_Color(180, 0, 255);
+			Fnt->Draw(show, x, 2, 2);
+			if (t <= 0 && PlayPuzzle->EMission() == Mission::BreakAway) EndPuzzle();
+		}
 
 
 		TQSG_Color(0, 0, 0);
