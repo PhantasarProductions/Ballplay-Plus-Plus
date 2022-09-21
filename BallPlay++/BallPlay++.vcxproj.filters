@@ -194,5 +194,18 @@
     <ClInclude Include="..\..\..\SuperTed\C++ Class\headers\SuperTed_Draw_TQSG.hpp">
       <Filter>Header Files\SuperTed</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="BallPlay++.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
