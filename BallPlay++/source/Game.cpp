@@ -48,6 +48,7 @@
 #include <MainMenu.hpp>
 #include <Chain.hpp>
 #include <Users.hpp>
+#include <Audio.hpp>
 #pragma endregion
 
 
@@ -636,6 +637,7 @@ namespace BallPlay {
 	}
 
 	void Bomb(_GameObject* o) {
+		SFX("Explosion");
 		_Explosion::NEW(o->x, o->y);
 		Destroy(o);
 	}
