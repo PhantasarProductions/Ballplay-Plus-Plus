@@ -25,7 +25,10 @@ imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2-2.0.12\lib\x64\SDL2.
 imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_image-2.0.5\lib\x64\SDL2_image.dll"
 imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_image-2.0.5\lib\x64\libpng16-16.dll"
 imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_image-2.0.5\lib\x64\zlib1.dll"
+imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_mixer-2.0.4\lib\x64\SDL2_mixer.dll"
 imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_mixer-2.0.4\lib\x64\libogg-0.dll"
+imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_mixer-2.0.4\lib\x64\libvorbis-0.dll"
+imp "E:\projects\applications\visualstudio\vc\3rdparty\SDL2_mixer-2.0.4\lib\x64\libvorbisfile-3.dll"
 
 echo "
 Done
