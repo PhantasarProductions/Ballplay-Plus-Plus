@@ -126,6 +126,9 @@
     <ClCompile Include="..\..\..\SuperTed\C++ Class\source\SuperTed_Draw_TQSG.cpp">
       <Filter>Source Files\SuperTed</Filter>
     </ClCompile>
+    <ClCompile Include="source\Audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\Audio.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
