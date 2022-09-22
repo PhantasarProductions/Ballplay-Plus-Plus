@@ -362,6 +362,8 @@ namespace BallPlay {
 			if (!ImgReg[Pack].count(Ghost)) {
 				ImgReg[Pack][Ghost] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ghost.png");
 			}
+			List.push_back(ret);
+			cout << "Ghost created! Object #" << List.size() << endl;
 			return ret;
 		}
 
