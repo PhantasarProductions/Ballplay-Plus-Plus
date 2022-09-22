@@ -361,10 +361,24 @@ namespace BallPlay {
 			ret->a = alpha;
 			if (!ImgReg[Pack].count(Ghost)) {
 				ImgReg[Pack][Ghost] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ghost.png");
+				Assert(ImgReg[Pack][Ghost] && ImgReg[Pack][Ghost]->Frames(), "No ghost image loaded");
 			}
 			List.push_back(ret);
 			cout << "Ghost created! Object #" << List.size() << endl;
 			return ret;
+		}
+
+		static GameObject NewDroid(int x, int y, ObjDirection D, ObjectMove _MoveFunction = nullptr) {
+			auto ret{ _NEW() };
+			auto Pack{ PlayPuzzle->PackName() };
+			ret->Type = Droid;
+			ret->Direction = D;
+			ret->x = x;
+			ret->y = y;
+			if (!ImgReg[Pack].count(Droid)) {
+				ImgReg[Pack][Droid] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Droid.png");
+				Assert(ImgReg[Pack][Droid] && ImgReg[Pack][Droid]->Frames(), "No Droid image loaded");
+			}
 		}
 
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
