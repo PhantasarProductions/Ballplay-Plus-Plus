@@ -61,6 +61,7 @@ int main(int cnt, char** args) {
 	TQSG_Cls();
 	TQSG_Flip(30);
 	TQSE_Init();
+	TQSA_Init();
 	SuperTed::SuperTed_InitTQSG(Resource());
 	CheckUserStartUp();
 	ChainRun();
