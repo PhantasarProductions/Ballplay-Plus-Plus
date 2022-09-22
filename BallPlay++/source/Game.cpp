@@ -347,6 +347,24 @@ namespace BallPlay {
 		ObjDirection Direction{ ObjDirection::South };
 		TQSG_AutoImage Img() { return ImgReg[PlayPuzzle->PackName()][Type]; }
 
+		static GameObject NewGhost(int x, int y, ObjDirection D, byte r, byte g, byte b, byte alpha, ObjectMove _MoveFunction = nullptr) {
+			auto ret{ _NEW() };
+			auto Pack{ PlayPuzzle->PackName() };
+			ret->Type = Ghost;
+			ret->Direction = D;
+			ret->x = x;
+			ret->y = y;
+			ret->_Move = _MoveFunction;
+			ret->r = r;
+			ret->g = g;
+			ret->b = b;
+			ret->a = alpha;
+			if (!ImgReg[Pack].count(Ghost)) {
+				ImgReg[Pack][Ghost] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Ghost.png");
+			}
+			return ret;
+		}
+
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
 			auto ret{ _NEW() };
 			auto Pack{ PlayPuzzle->PackName() };
