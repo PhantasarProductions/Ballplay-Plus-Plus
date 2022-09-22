@@ -23,6 +23,9 @@
 // 
 // Version: 22.09.22
 // EndLic
+
+#include <iostream>
+
 #include <QuickString.hpp>
 
 #include <Chain.hpp>
@@ -37,16 +40,18 @@ namespace BallPlay {
 
 	TrickyUnits::TQSA_AutoAudio GetAudio(std::string entry, bool loop) {
 		auto uent{ Upper(entry) };
-		if (!AudioRegister.count(entry)) {
+		if (!AudioRegister.count(uent)) {
+			cout << "Loading audio: " << entry << endl;
 			Assert(Resource()->EntryExists(entry), "Audio entry  '" + entry + "' not found in BallPlay++.JCR");
-			AudioRegister[uent] = LoadAudio(*Resource(), entry);
-			AudioRegister[uent]->AlwaysLoop = loop;
+			AudioRegister[uent] = LoadAudio(*Resource(), entry); 
+			if (!AudioRegister[uent]) Crash("Loading audio entry '" + entry + "' failed!\n\n" + SDL_GetError());
+			//AudioRegister[uent]->AlwaysLoop = loop;
 		}
 		return AudioRegister[uent];
 	}
 
 	void SFX(std::string effect) {
-		GetAudio("Audio/" + effect + ".ogg", false)->Play();
+		GetAudio("Audio/" + effect + ".ogg")->ChPlay(1);
 	}
 
 }
