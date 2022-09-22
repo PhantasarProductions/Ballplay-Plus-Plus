@@ -204,12 +204,14 @@
     <ClInclude Include="headers\Sinus.hpp" />
     <ClInclude Include="headers\Users.hpp" />
     <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="BallPlay++.ico" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BallPlay++.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="BallPlay++.ico" />
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
