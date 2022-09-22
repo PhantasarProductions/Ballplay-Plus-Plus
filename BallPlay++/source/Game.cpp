@@ -424,6 +424,9 @@ namespace BallPlay {
 							case RedBall:
 								NewBall(ix, iy, d, BallColor::Red);
 								break;
+							case Ghost:
+								NewGhost(ix, iy, d, ToInt(o->Data["Red"]), ToInt(o->Data["Green"]), ToInt(o->Data["Blue"]), max(ToInt(o->Data["Alpha"]), 150));
+								break;
 							default: {
 								char E[400];
 								sprintf_s(E, "Unknown object type: '%d'(%x) on position (%02d,%02d)!", o->kind, o->kind, ix, iy);
