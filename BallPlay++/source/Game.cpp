@@ -596,7 +596,7 @@ namespace BallPlay {
 	GameTool GameTool::Tools[4]{
 		{"Plate1",redplate1, "Plate/"},
 		{"Plate2",redplate2, "Plate\\"},
-		{"Barrier",1,"Wall","WALL"},
+		{"Barrier",1,"Barrier","WALL"},
 		{"Remove",0,"Remove"}
 	};
 	void Scan4Tools(){
@@ -809,9 +809,10 @@ namespace BallPlay {
 		TQSG_Color(r, g, b);
 		TQSG_Rect(TX * PlayPuzzle->GridW() + PlayPuzzle->gPX(), TY * PlayPuzzle->GridH() + PlayPuzzle->gPY(), PlayPuzzle->GridW(), PlayPuzzle->GridH(), true);
 		if (s != GameStages::Game) return;
+		// Tool Placements
 		if (TQSE_MouseHit(1) && SpotIsClear(TX, TY) && GameTool::Tools[GameTool::Chosen].left) {
 			GameTool::Tools[GameTool::Chosen].left--;
-			PlayPuzzle->PuzR()->LayVal("DIRECTIONS",TX, TY, GameTool::Tools[GameTool::Chosen].PlaceTileID);
+			PlayPuzzle->PuzR()->LayVal(GameTool::Tools[GameTool::Chosen].Layer,TX, TY, GameTool::Tools[GameTool::Chosen].PlaceTileID);
 			PlayPuzzle->Moves++;
 		}
 	}
