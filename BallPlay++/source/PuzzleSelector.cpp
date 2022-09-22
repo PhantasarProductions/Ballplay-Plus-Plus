@@ -257,6 +257,7 @@ namespace BallPlay {
 	}
 
 	void _Puzzle::DBack() {
+		TQSG_SetAlpha(255);
 		if (PuzMap->Data["Background"].size()) {
 			if (!BackImg) BackImg = TQSG_LoadAutoImage(Resource(), PuzMap->Data["Background"]);
 			BackImg->Stretch(PX, PY, PixW(), PixH());
