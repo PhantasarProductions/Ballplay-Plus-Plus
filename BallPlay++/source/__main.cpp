@@ -51,17 +51,20 @@
 using namespace TrickyUnits;
 using namespace BallPlay;
 
+
 int main(int cnt, char** args) {
+	char s[2][20]{ "Failed\n","Success\n" };
 	std::cout << "BallPlay ++\nBuild: " << BPP_BuildDate << "\nCoded by: Tricky\n(C) Jeroen P. Broks - Source licensed under the terms of the GPL3\n\n";
 	ResourceFile = TReplace(ExtractDir(args[0]),'\\','/') + "/BallPlay++.jcr";
 	std::cout << ID("Title") << " resource file by " << ID("Author") << "\n";
 	std::cout << "Last built: " << ID("LastBuild")<< "\n";
 	std::cout << "Build number: " << ID("Build")<< "\n";
-	TQSG_Init("BallPlay++", 1200, 1000);	
+	std::cout << "\n\n\n";
+	std::cout << "Init Graphics: " << s[TQSG_Init("BallPlay++", 1200, 1000)] << std::endl;
 	TQSG_Cls();
 	TQSG_Flip(30);
-	TQSE_Init();
-	TQSA_Init();
+	TQSE_Init(); std::cout << "Init Events";
+	std::cout<<"Init Audio Mixer: "<<s[TQSA_Init()];
 	SuperTed::SuperTed_InitTQSG(Resource());
 	CheckUserStartUp();
 	ChainRun();
