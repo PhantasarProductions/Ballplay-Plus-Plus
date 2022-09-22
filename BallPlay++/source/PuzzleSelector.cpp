@@ -320,8 +320,8 @@ namespace BallPlay {
 			b = TRand(255);
 		} while (r + g + b < 100);
 		printf("Sinus color set to #%02x%02x%02x\n", r, g, b);
-		SinusColor(r, g, b);
-		cout << "Loading puzzle: " << ret->_Tag<<endl;
+		SinusColor(r, g, b); 
+		cout << "Loading puzzle: " << ret->_Tag<<endl; 
 		ret->PuzMap = SuperTed::LoadTeddy(Resource(),"Packages/"+Pck+"/Puzzles/"+ret->_Tag);
 		if (!ret->PuzMap) PZLCrash("For unknown reasons loading puzzle " + ret->_Tag + " from package '" + Pck + "' failed");
 		cout << "Success. PixelFormat " << ret->PixW() << "x" << ret->PixH() << "; TileFormat:" << ret->W()<< "x"<<ret->H() <<"; Grid: "<<ret->GridW()<<"x"<<ret->GridH() << endl;
