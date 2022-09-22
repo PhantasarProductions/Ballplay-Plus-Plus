@@ -12,3 +12,5 @@ Should I ever find some old versions of BallPlay that I didn't yet put in BallPl
 Now Windows will be my primary target for now, however should I be able to find ways to make a version for Linux and WASM too, I will certainly consider that. (MacOS, and iOS are out of the question due to their strict AppStore policy. If you wanna port this game to Mac yourself, go ahead, I won't stop you. The source code is GPL3 licensed anyway).
 
 
+
+Current status: In development!
