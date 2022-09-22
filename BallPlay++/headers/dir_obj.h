@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.20
+// Version: 22.09.22
 // EndLic
 #pragma once
 #ifdef __cplusplus
@@ -79,8 +79,8 @@ namespace BallPlay {
 			GreenBall = 0x02,
 			BallRed = 0x03,
 			RedBall = 0x03,
-			Ghost = 0x12,
-			Droid = 0x11
+			Ghost = 0x04, //0x12,
+			Droid = 0x05 //0x11
 
 		
 		};

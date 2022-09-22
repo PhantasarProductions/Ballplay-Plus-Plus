@@ -206,10 +206,10 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource.rc" />
+    <Image Include="BallPlay++.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="BallPlay++.ico" />
+    <ResourceCompile Include="BallPlay++.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
