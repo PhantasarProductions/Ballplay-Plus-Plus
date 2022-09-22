@@ -72,6 +72,7 @@ namespace BallPlay {
 	static TQSG_AutoImageFont Fnt{ nullptr };
 	Puzzle PlayPuzzle{ nullptr };
 
+
 #pragma region Kaartkleuren
 	static int CountBalls();
 	static bool __Always(Puzzle P) { return true; }
@@ -320,12 +321,17 @@ namespace BallPlay {
 	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall };
 	enum class ObjDirection { North, South, East, West };
 	class _GameObject; typedef shared_ptr<_GameObject> GameObject;
+	void Destroy(_GameObject* o);
+	void Bomb(_GameObject* o);
+
 	typedef void (*ObjectMove)(_GameObject*);
 	void RegMove(_GameObject*); void GirlMove(_GameObject*);
 	class _GameObject {
 	private:
+		static uint64 Teller;
 		static map<string,map<ObjTypes, TQSG_AutoImage>> ImgReg;
 		static GameObject _NEW() { return make_shared<_GameObject>(); }
+		uint64 _ID{ Teller++ };
 		ObjectMove _Move{ nullptr };
 	public:
 		static vector<GameObject> List;
@@ -347,6 +353,7 @@ namespace BallPlay {
 		ObjDirection Direction{ ObjDirection::South };
 		TQSG_AutoImage Img() { return ImgReg[PlayPuzzle->PackName()][Type]; }
 
+		int ID() { return _ID; }
 		static GameObject NewGhost(int x, int y, ObjDirection D, byte r, byte g, byte b, byte alpha, ObjectMove _MoveFunction = nullptr) {
 			auto ret{ _NEW() };
 			auto Pack{ PlayPuzzle->PackName() };
@@ -379,6 +386,9 @@ namespace BallPlay {
 				ImgReg[Pack][Droid] = TQSG_LoadAutoImage(Resource(), "Packages/" + PlayPuzzle->PackName() + "/Objects/Droid.png");
 				Assert(ImgReg[Pack][Droid] && ImgReg[Pack][Droid]->Frames(), "No Droid image loaded");
 			}
+			List.push_back(ret);
+			cout << "Droid created! Object #" << List.size() << endl;
+			return ret;
 		}
 
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
@@ -414,6 +424,7 @@ namespace BallPlay {
 				break;
 			}
 			List.push_back(ret);
+			cout << "Ball created! Object #" << List.size() << endl;
 			return ret;
 		}
 		static void Scan(bool clean=true) {
@@ -443,6 +454,9 @@ namespace BallPlay {
 							case Ghost:
 								NewGhost(ix, iy, d, ToInt(o->Data["Red"]), ToInt(o->Data["Green"]), ToInt(o->Data["Blue"]), max(ToInt(o->Data["Alpha"]), 150));
 								break;
+							case Droid:
+								NewDroid(ix, iy, d);
+								break;
 							default: {
 								char E[400];
 								sprintf_s(E, "Unknown object type: '%d'(%x) on position (%02d,%02d)!", o->kind, o->kind, ix, iy);
@@ -471,10 +485,32 @@ namespace BallPlay {
 			if (mody > 0) mody = max(0, mody - spdy); else if (mody < 0) mody = min(0, mody + spdy);
 		}
 		static void DrawAll() {
-			for (auto o : List) if (!o->Removed) o->Draw();
+			for (auto o : List) if (!o->Removed) {
+				o->Draw();
+				for (auto o2 : List) if (!o2->Removed) {
+					if (o2->x == o->x && o2->y == o->y && o2->ID() != o->ID()) {
+						switch (o->Type) {
+						case ObjTypes::Ball:
+							if (o2->Type == ObjTypes::Girl) Crash("Killing girls by balls not yet supported");
+							break;
+						case ObjTypes::Ghost:
+							switch(o2->Type){
+							case ObjTypes::Girl: Crash("Killing girls by ghosts not yet supported"); break;
+							case ObjTypes::Ball: Destroy(o2.get()); break;
+							}
+							break;
+						case ObjTypes::Droid:
+							switch (o2->Type) {
+							case ObjTypes::Girl: Crash("Killing girls by droids not yet supported"); break;
+							case ObjTypes::Ball: Bomb(o2.get()); break;
+							}
+						}
+					}
+				}
+			}
 		}
 	};
-
+	uint64 _GameObject::Teller{ 0 };
 	map<string,map<ObjTypes, TQSG_AutoImage>> _GameObject::ImgReg{};
 	vector<GameObject> _GameObject::List{};
 

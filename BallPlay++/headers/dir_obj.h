@@ -80,7 +80,8 @@ namespace BallPlay {
 			BallRed = 0x03,
 			RedBall = 0x03,
 			Ghost = 0x04, //0x12,
-			Droid = 0x05 //0x11		
+			Droid = 0x05, //0x11		
+			Girl = 0x06
 		};
 
 #ifdef __cplusplus
