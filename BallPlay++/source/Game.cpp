@@ -497,7 +497,7 @@ namespace BallPlay {
 						case ObjTypes::Ghost:
 							switch(o2->Type){
 							case ObjTypes::Girl: Crash("Killing girls by ghosts not yet supported"); break;
-							case ObjTypes::Ball: Destroy(o2.get()); break;
+							case ObjTypes::Ball: Destroy(o2.get()); SFX("Ghost"); break;
 							}
 							break;
 						case ObjTypes::Droid:

@@ -46,6 +46,7 @@ namespace BallPlay {
 	class _PuzPack {
 	private:
 		static std::map<std::string, PuzPack> Pack;
+		static std::map<int, std::string> Sounds;
 		static std::string _Selected;
 		TrickyUnits::GINIE Meta;
 	public:
@@ -55,6 +56,8 @@ namespace BallPlay {
 		static PuzPack GetPack();
 		static std::string Selected();
 		int MaxPuzzles();
+		int MaxDeathSounds();
+		void DeathSound(int i);
 		std::string Tag(int num);
 		std::string Name(int num);
 		int Next(int n);

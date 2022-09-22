@@ -43,6 +43,7 @@
 #include <Users.hpp>
 #include <PackSelector.hpp>
 #include <Game.hpp>
+#include <Audio.hpp>
 
 
 
@@ -99,6 +100,12 @@ namespace BallPlay {
 		return ToInt(Meta.Value("Puzzles", "Max"));
 	}
 
+	int _PuzPack::MaxDeathSounds() {
+		return ToInt(Meta.Value("Death","Max"));
+	}
+
+	void _PuzPack::DeathSound(int i) { if (Sounds.count(i)) SFX(Sounds[i]); }
+
 	std::string _PuzPack::Tag(int num) {
 		char ret[20]{0};
 		if (MaxPuzzles() < 10)
@@ -140,6 +147,13 @@ namespace BallPlay {
 	_PuzPack::_PuzPack(std::string pack) {
 		cout << "Loading pack data: " << pack << endl;
 		Meta.Parse(Resource()->String("Packages/" + pack + "/Meta.ini"));
+		Sounds.clear();
+		for (auto i = 0; i < MaxDeathSounds(); i++) {
+			char snd[5];
+			sprintf_s(snd, "%03d", i);
+			cout << "Death Sound: " << snd << ": " << Meta.Value("Death", snd);
+			Sounds[i] = Meta.Value("Death", snd);
+		}
 	}
 
 	bool PuzzleSelector() {
