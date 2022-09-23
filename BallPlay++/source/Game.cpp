@@ -246,13 +246,13 @@ namespace BallPlay {
 			make_shared<_TStageButton>("Pause",Pause)}
 			} },
 		{GameStages::Success,{GameStages::Success,EmptyFlow,{
-			make_shared<_TStageButton>("MainMenu",BackToMain),
+			make_shared<_TStageButton>("Main Menu",BackToMain),
 			make_shared<_TStageButton>("Other",Other),
 			make_shared<_TStageButton>("Again",Again),
 			make_shared<_TStageButton>("Next",Next)}
 			}},
 		{GameStages::Fail,{GameStages::Fail,EmptyFlow,{
-			make_shared<_TStageButton>("MainMenu",BackToMain),
+			make_shared<_TStageButton>("Main Menu",BackToMain),
 			make_shared<_TStageButton>("Other",Other),
 			make_shared<_TStageButton>("Again",Again)}
 			}}		
@@ -346,18 +346,19 @@ namespace BallPlay {
 			ret->mody = mody;
 			ret->img = img;
 			cout << "Death anim #" << ret->ID << " created\n";
+			List += ret;
 		}
 		~_DeathAnim() { cout << "Death anim #" << ID << " disposed!\n"; }
 		int DW() { return max(0, img->W() - (scalex * 2)); }
 		int DH() { return max(0, img->H() - (scaley * 2)); }
 		void Draw(bool dontprocess = false) {
-			if (DW() && DH()) img->Stretch(x + scalex, y + scaley, DW(), DH());
+			if (DW() && DH()) img->Stretch(x + scalex + modx, y + scaley + mody, DW(), DH());
 			if (dontprocess) return;
 			skip = (++skip) % maxskip;
 			if (!skip) { 
 				if (abs(modx) || abs(mody)) {
-					if (modx < 0) modx++; else if (modx > 0) modx--;
-					if (mody < 0) mody++; else if (mody > 0) mody--;
+					if (modx < 0) modx = min(0, modx + 4); else if (modx > 0) modx = max(0, modx - 4);
+					if (mody < 0) mody = min(0, mody + 4); else if (mody > 0) mody = max(0, mody - 4);
 				} else {
 					scalex++; scaley++;
 				}
@@ -409,6 +410,7 @@ namespace BallPlay {
 			g{ 255 },
 			b{ 255 },
 			a{ 255 };
+		bool JustTransported{ false };
 		BallColor Col{ BallColor::None }; // Only used for exit scans
 		ObjDirection Direction{ ObjDirection::South };
 		TQSG_AutoImage Img() { return ImgReg[PlayPuzzle->PackName()][Type]; }
@@ -716,6 +718,34 @@ namespace BallPlay {
 		o->modx = 0;
 		o->mody = 0;
 		if (o->Removed) return;
+		auto tr1{ PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y) };
+
+		if (tr1) {
+			switch (o->Direction) {
+			case ObjDirection::North:
+			case ObjDirection::South:
+				o->JustTransported = o->JustTransported && (!(Block(o->x, o->y + 1) && Block(o->x, o->y - 1)));
+				break;
+			case ObjDirection::West:
+			case ObjDirection::East:
+				o->JustTransported = o->JustTransported && (!(Block(o->x + 1, o->y) && Block(o->x - 1, o->y)));
+				break;
+			}
+			if (!o->JustTransported) {
+				cout << "\x1b[32mF: Transporter check: " << tr1 << "(" << o->x << "," << o->y << ")\x1b[0m\n"; // Debug only!
+				for (uint32 y2 = 0; y2 < PlayPuzzle->H(); y2++) for (uint32 x2 = 0; x2 < PlayPuzzle->W(); x2++) {
+					auto tr2{ PlayPuzzle->PuzR()->LayVal("TRANS", x2, y2) };
+					if (tr2) cout << "\x1b[33mT: Transporter check: " << tr2 << "(" << x2 << "," << y2 << ") --> " << (tr1 == tr2) << "\x1b[0m\n";
+					if ((x2 != o->x || y2 != o->y) && tr1 == tr2) {
+						o->x = x2;
+						o->y = y2;
+						o->JustTransported = true;
+						goto einde_trans; // Make sure no conflicts with other transporters can arise! 
+					}
+				}
+			}
+		}
+		einde_trans:
 		// Where to go?
 		switch (o->Direction) {
 		case ObjDirection::North:
@@ -724,6 +754,7 @@ namespace BallPlay {
 			else {
 				o->y--;
 				o->mody = PlayPuzzle->GridH();
+				o->JustTransported = false;
 				//if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
 				//	o->Direction = ObjDirection::South;
 			}
@@ -734,6 +765,7 @@ namespace BallPlay {
 			else {
 				o->y++;
 				o->mody = -PlayPuzzle->GridH();
+				o->JustTransported = false;
 				//if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
 				//	o->Direction = ObjDirection::North;
 			}
@@ -744,6 +776,7 @@ namespace BallPlay {
 			else {
 				o->x--;
 				o->modx = PlayPuzzle->GridW();
+				o->JustTransported = false;
 				//if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y - 1))
 				//	o->Direction = ObjDirection::East;
 			}
@@ -754,6 +787,7 @@ namespace BallPlay {
 			else {
 				o->x++;
 				o->modx = -PlayPuzzle->GridW();
+				o->JustTransported = false;
 				//if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
 				//	o->Direction = ObjDirection::West;
 			}
@@ -801,27 +835,29 @@ namespace BallPlay {
 		case ExitRed: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Red) Finished(o); else if (o->Col != BallColor::None) Destroy(o); break;
 		}
 
-		switch (o->Direction) {
-		case ObjDirection::North:
-			if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
-				o->Direction = ObjDirection::South;
-			break;
-		case ObjDirection::South:
-			if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
-				o->Direction = ObjDirection::North;
-			break;
-		case ObjDirection::West:
-			if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y))
-				o->Direction = ObjDirection::East;
-			break;
-		case ObjDirection::East:
-			if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
-				o->Direction = ObjDirection::West;
-			break;
-		default:
+		if ((!o->JustTransported) && (!PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y))) {
+			switch (o->Direction) {
+			case ObjDirection::North:
+				if (Break(o->x, o->y - 1) || Block(o->x, o->y - 1))
+					o->Direction = ObjDirection::South;
+				break;
+			case ObjDirection::South:
+				if (Break(o->x, o->y + 1) || Block(o->x, o->y + 1))
+					o->Direction = ObjDirection::North;
+				break;
+			case ObjDirection::West:
+				if (Break(o->x - 1, o->y) || Block(o->x - 1, o->y))
+					o->Direction = ObjDirection::East;
+				break;
+			case ObjDirection::East:
+				if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
+					o->Direction = ObjDirection::West;
+				break;
+			default:
 
-			Crash("Uknown direction! (B)");
-			break;
+				Crash("Uknown direction! (B)");
+				break;
+			}
 		}
 
 
