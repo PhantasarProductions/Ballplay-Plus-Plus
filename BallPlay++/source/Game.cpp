@@ -372,6 +372,8 @@ namespace BallPlay {
 			}
 		}
 	};
+	int _DeathAnim::Teller{ 0 };
+	TList<DeathAnim> _DeathAnim::List{};
 
 #pragma endregion
 
