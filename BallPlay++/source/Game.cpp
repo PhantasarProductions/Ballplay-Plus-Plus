@@ -348,8 +348,8 @@ namespace BallPlay {
 			cout << "Death anim #" << ret->ID << " created\n";
 		}
 		~_DeathAnim() { cout << "Death anim #" << ID << " disposed!\n"; }
-		int DW() { return max(0, x - (scalex * 2)); }
-		int DH() { return max(0, y - (scaley * 2)); }
+		int DW() { return max(0, img->W() - (scalex * 2)); }
+		int DH() { return max(0, img->H() - (scaley * 2)); }
 		void Draw(bool dontprocess = false) {
 			if (DW() && DH()) img->Stretch(x + scalex, y + scaley, DW(), DH());
 			if (dontprocess) return;
