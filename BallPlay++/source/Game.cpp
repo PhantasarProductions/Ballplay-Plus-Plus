@@ -704,7 +704,7 @@ namespace BallPlay {
 	void DeathCheck(_GameObject* o) {
 		auto R{ PlayPuzzle->PuzR() };
 		auto D{ R->LayVal("DEATH", o->x, o->y) };
-		if (D) {
+		if ((!o->Removed) && D) {
 			PlayPuzzle->Pack()->DeathSound(D);
 			_DeathAnim::Create(o->Img(), PlayPuzzle->gPX() + (o->x * PlayPuzzle->GridW()), PlayPuzzle->gPY() + (o->y * PlayPuzzle->GridH()), o->modx, o->mody);
 			Destroy(o);
