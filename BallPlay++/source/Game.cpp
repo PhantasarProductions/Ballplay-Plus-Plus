@@ -318,6 +318,63 @@ namespace BallPlay {
 	int _Explosion::Teller{ 0 };
 #pragma endregion
 
+#pragma region DeathZones
+	class _DeathAnim;
+	typedef shared_ptr<_DeathAnim> DeathAnim;
+
+	class _DeathAnim {
+	private:
+		const int maxskip{ 3 };
+		int skip{ 0 };
+		static int Teller;
+		int ID{ Teller++ };
+	public:
+		TList<DeathAnim> List;
+		int
+			x{ 0 },
+			y{ 0 },
+			modx{ 0 },
+			mody{ 0 },
+			scalex{ 0 },
+			scaley{ 0 };
+		TQSG_AutoImage img;
+		static void Create(TQSG_AutoImage img, int x, int y, int modx=0, int mody=0) {
+			auto ret{ make_shared<_DeathAnim>() };
+			ret->x = x;
+			ret->y = y;
+			ret->modx = modx;
+			ret->mody = mody;
+			ret->img = img;
+			cout << "Death anim #" << ret->ID << " created\n";
+		}
+		~_DeathAnim() { cout << "Death anim #" << ID << " disposed!\n"; }
+		int DW() { return max(0, x - (scalex * 2)); }
+		int DH() { return max(0, y - (scaley * 2)); }
+		void Draw(bool dontprocess = false) {
+			if (DW() && DH()) img->Stretch(x + scalex, y + scaley, DW(), DH());
+			if (dontprocess) return;
+			skip = (++skip) % maxskip;
+			if (!skip) { 
+				if (abs(modx) || abs(mody)) {
+					if (modx < 0) modx++; else if (modx > 0) modx--;
+					if (mody < 0) mody++; else if (mody > 0) mody--;
+				} else {
+					scalex++; scaley++;
+				}
+			}
+		}
+		static void DrawAll(bool dontprocess = false, bool dontremove = false) {
+			TLFORA(List, Lnk) {
+				Lnk->Obj->Draw(dontprocess);
+				if (!dontremove) {
+					if (Lnk->Obj->DW() <= 0 || Lnk->Obj->DH() <= 0) Lnk->UnLink();
+				}
+			}
+		}
+	};
+
+#pragma endregion
+
 #pragma region Game_Objects
 	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall };
 	enum class ObjDirection { North, South, East, West };
@@ -642,6 +699,16 @@ namespace BallPlay {
 		Destroy(o);
 	}
 
+	void DeathCheck(_GameObject* o) {
+		auto R{ PlayPuzzle->PuzR() };
+		auto D{ R->LayVal("DEATH0", o->x, o->y) };
+		if (D) {
+			PlayPuzzle->Pack()->DeathSound(D);
+			_DeathAnim::Create(o->Img(), PlayPuzzle->gPX() + (o->x * PlayPuzzle->GridW()), PlayPuzzle->gPY() + (o->y * PlayPuzzle->GridH()), o->modx, o->mody);
+			Destroy(o);
+		}
+	}
+
 	void RegMove(_GameObject* o) {
 		// Conflict prevention on slow CPUs
 		o->modx = 0;
@@ -832,10 +899,11 @@ namespace BallPlay {
 					Bomb(o.get());
 					PlayPuzzle->PuzR()->LayVal("BOMBS", o->x, o->y, 0);
 				}
+				DeathCheck(o.get());
 			}
 			OTicks = PTicks;
 		}
-		_Explosion::Run();
+	
 		/* DEBUG ONLY
 		for (int y = 0; y < PlayPuzzle->H(); y++) for (int x = 0; x < PlayPuzzle->W(); x++) {
 			TQSG_Color(255, 255, 255); Fnt->Draw(to_string(PlayPuzzle->PuzR()->Layers["WALL"]->Field->Value(x, y)), x * 40, y * 40);
@@ -915,6 +983,8 @@ namespace BallPlay {
 		Fnt->Draw(PlayPuzzle->MissionName(), TQSG_ScreenWidth() - 4, 2, 1, 0);
 		TStage::Stage[TStage::Current].Flow(TStage::Current);
 		TStage::Stage[TStage::Current].HandleButtons();
+		_Explosion::Run();
+		_DeathAnim::DrawAll();
 		Flip();
 		return true;
 	}
