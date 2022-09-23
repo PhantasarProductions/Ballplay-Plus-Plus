@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.22
+// Version: 22.09.23
 // EndLic
 
 #pragma region Include_C++
@@ -329,7 +329,7 @@ namespace BallPlay {
 		static int Teller;
 		int ID{ Teller++ };
 	public:
-		TList<DeathAnim> List;
+		static TList<DeathAnim> List;
 		int
 			x{ 0 },
 			y{ 0 },
@@ -701,7 +701,7 @@ namespace BallPlay {
 
 	void DeathCheck(_GameObject* o) {
 		auto R{ PlayPuzzle->PuzR() };
-		auto D{ R->LayVal("DEATH0", o->x, o->y) };
+		auto D{ R->LayVal("DEATH", o->x, o->y) };
 		if (D) {
 			PlayPuzzle->Pack()->DeathSound(D);
 			_DeathAnim::Create(o->Img(), PlayPuzzle->gPX() + (o->x * PlayPuzzle->GridW()), PlayPuzzle->gPY() + (o->y * PlayPuzzle->GridH()), o->modx, o->mody);
