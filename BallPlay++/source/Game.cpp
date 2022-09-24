@@ -658,7 +658,7 @@ namespace BallPlay {
 	GameTool GameTool::Tools[4]{
 		{"Plate1",redplate1, "Plate/"},
 		{"Plate2",redplate2, "Plate\\"},
-		{"Barrier",1,"Barrier","WALL"},
+		{"Barrier",1,"Barrier","WALL"}, 
 		{"Remove",0,"Remove"}
 	};
 	void Scan4Tools(){
@@ -717,9 +717,9 @@ namespace BallPlay {
 		// Conflict prevention on slow CPUs
 		o->modx = 0;
 		o->mody = 0;
-		if (o->Removed) return;
+		if (o->Removed) return; // cleaning up vectors can be a disaster. Should have used my Linked List in stead.
+		// Transporters
 		auto tr1{ PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y) };
-
 		if (tr1) {
 			switch (o->Direction) {
 			case ObjDirection::North:
@@ -741,7 +741,7 @@ namespace BallPlay {
 						o->y = y2;
 						o->JustTransported = true;
 						SFX("TRANS");
-						goto einde_trans; // Make sure no conflicts with other transporters can arise! 
+						goto einde_trans; // Make sure no conflicts with other transporters can arise!
 					}
 				}
 			}
