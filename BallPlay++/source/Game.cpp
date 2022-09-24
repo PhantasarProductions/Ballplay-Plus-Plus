@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.23
+// Version: 22.09.24
 // EndLic
 
 #pragma region Include_C++
@@ -740,6 +740,7 @@ namespace BallPlay {
 						o->x = x2;
 						o->y = y2;
 						o->JustTransported = true;
+						SFX("TRANS");
 						goto einde_trans; // Make sure no conflicts with other transporters can arise! 
 					}
 				}
