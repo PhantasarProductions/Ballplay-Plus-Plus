@@ -257,8 +257,7 @@ namespace BallPlay {
 			make_shared<_TStageButton>("Again",Again)}
 			}}		
 	};
-	void SetGameStage(GameStages N) { TStage::Current = N; }
-
+	void SetGameStage(GameStages N) { TStage::Current = N; /* TQSE_Flush(); */ }
 #pragma endregion
 
 #pragma region Explosions
@@ -832,8 +831,8 @@ namespace BallPlay {
 		case droidarrowright: if (o->Type == ObjTypes::Droid) o->Direction = ObjDirection::East; return;
 
 		case Exit: if (o->Type == ObjTypes::Ball && o->Col == BallColor::None)  Finished(o); break;
-		case ExitGreen: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Green) Finished(o); else if (o->Col != BallColor::None) Destroy(o); break;
-		case ExitRed: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Red) Finished(o); else if (o->Col != BallColor::None) Destroy(o); break;
+		case ExitGreen: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Green) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
+		case ExitRed: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Red) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
 		}
 
 		if ((!o->JustTransported) && (!PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y))) {
@@ -854,8 +853,7 @@ namespace BallPlay {
 				if (Break(o->x + 1, o->y) || Block(o->x + 1, o->y))
 					o->Direction = ObjDirection::West;
 				break;
-			default:
-
+			default: 
 				Crash("Uknown direction! (B)");
 				break;
 			}
