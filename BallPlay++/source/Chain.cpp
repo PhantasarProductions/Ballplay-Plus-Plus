@@ -23,8 +23,11 @@
 // 
 // Version: 22.09.10
 // EndLic
+
 #include "Chain.hpp"
 #include <TQSE.hpp>
+
+using namespace TrickyUnits;
 
 namespace BallPlay {
 
@@ -38,6 +41,7 @@ namespace BallPlay {
 		
 	void SetChain(ChainState State) {
 		_State = State;
+		TQSE_Flush();
 	}
 
 	void ChainRun() {
