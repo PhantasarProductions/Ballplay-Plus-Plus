@@ -23,6 +23,7 @@
 // 
 // Version: 22.09.23
 // EndLic
+
 #pragma once
 // C++
 #include <string>
