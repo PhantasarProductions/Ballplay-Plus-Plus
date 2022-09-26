@@ -61,14 +61,15 @@ namespace BallPlay {
 			dot = 0x31,
 			normalexit = 0x70,
 			greenexit = 0x71,
-			redexit = 0x72, 
+			redexit = 0x72,
 			laser = 0xf0,
 			lasertrigger = 0xf1,
 			Exit = 0x70,
 			ExitGreen = 0x71,
 			GreenExit = 0x71,
 			ExitRed = 0x72,
-			RedExit = 0x72
+			RedExit = 0x72,
+			GirlHome = 2, girlhome = 2
 		};
 
 		enum ObjTypes {
