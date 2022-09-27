@@ -62,6 +62,8 @@ namespace BallPlay {
 			normalexit = 0x70,
 			greenexit = 0x71,
 			redexit = 0x72,
+			blueexit = 0x73,
+			emberexit = 0x74,
 			laser = 0xf0,
 			lasertrigger = 0xf1,
 			Exit = 0x70,
@@ -69,6 +71,11 @@ namespace BallPlay {
 			GreenExit = 0x71,
 			ExitRed = 0x72,
 			RedExit = 0x72,
+			BlueExit = 0x73,
+			EmberExit = 0x74,
+			ExitBlue = 0x73,
+			ExitEmber = 0x74,
+
 			GirlHome = 2, girlhome = 2
 		};
 
