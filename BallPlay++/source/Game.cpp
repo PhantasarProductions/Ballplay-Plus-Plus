@@ -378,7 +378,7 @@ namespace BallPlay {
 #pragma endregion
 
 #pragma region Game_Objects
-	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall };
+	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall, Blue = BlueBall, Ember = EmberBall };
 	enum class ObjDirection { North, South, East, West };
 	class _GameObject; typedef shared_ptr<_GameObject> GameObject;
 	void Destroy(_GameObject* o);
@@ -480,6 +480,16 @@ namespace BallPlay {
 				ret->g = 255;
 				ret->b = 0;
 				break;
+			case BallColor::Ember:
+				ret->r = 255;
+				ret->g = 180;
+				ret->b = 0;
+				break;
+			case BallColor::Blue:
+				ret->r = 0;
+				ret->g = 0;
+				ret->b = 255;
+				break;
 			default:
 				Crash("Unknown ball color\nCan only be the result of a bug. Please report!");
 				break;
@@ -499,7 +509,7 @@ namespace BallPlay {
 							if (o->Data["Direction"] == "North") d = ObjDirection::North;
 							else if (o->Data["Direction"] == "East") d = ObjDirection::East;
 							else if (o->Data["Direction"] == "West") d = ObjDirection::West;
-							switch (o->kind) {
+							switch (o->kind) { 
 							case 0:
 								cout << "\x1b[31mWARNING!\x1b[0m\tObject kind 0 encountered on position (" << ix << "," << iy << ") (" << ++obj0 << ")\n";
 								break;
@@ -511,6 +521,12 @@ namespace BallPlay {
 								break;
 							case RedBall:
 								NewBall(ix, iy, d, BallColor::Red);
+								break;
+							case EmberBall:
+								NewBall(ix, iy, d, BallColor::Ember);
+								break;
+							case BlueBall:
+								NewBall(ix, iy, d, BallColor::Blue);
 								break;
 							case Ghost:
 								NewGhost(ix, iy, d, ToInt(o->Data["Red"]), ToInt(o->Data["Green"]), ToInt(o->Data["Blue"]), max(ToInt(o->Data["Alpha"]), 150));
@@ -833,6 +849,8 @@ namespace BallPlay {
 		case Exit: if (o->Type == ObjTypes::Ball && o->Col == BallColor::None)  Finished(o); break;
 		case ExitGreen: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Green) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
 		case ExitRed: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Red) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
+		case ExitEmber: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Ember) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
+		case ExitBlue: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Blue) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
 		}
 
 		if ((!o->JustTransported) && (!PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y))) {
@@ -979,9 +997,10 @@ namespace BallPlay {
 		DoCheckQuit();
 		PlayPuzzle->DBack();
 		for (auto dlay : LayOrder) {
-			if (strcmp(dlay, "WALL") == 0) _GameObject::DrawAll();
 			PlayPuzzle->DrawLayer(dlay);
+			if (strcmp(dlay, "WALL") == 0) _GameObject::DrawAll();
 		}
+		if (PlayPuzzle->Pack()->GlassLayer()) PlayPuzzle->DrawLayer("GLASS");
 		TileCheck(TStage::Current);
 		SClass::ShowSuits();
 		GameTool::Draw();

@@ -76,7 +76,29 @@ namespace BallPlay {
 			ExitBlue = 0x73,
 			ExitEmber = 0x74,
 
-			GirlHome = 2, girlhome = 2
+			GirlHome = 2, girlhome = 2,
+
+			LaserRedNorth = 0xfff0,
+			LaserRedSouth = 0xfff1,
+			LaserRedWest = 0xfff2,
+			LaserRedEast = 0xfff3,
+
+			LaserBlueNorth = 0xfff4,
+			LaserBlueSouth = 0xfff5,
+			LaserBlueWest = 0xfff6,
+			LaserBlueEast = 0xfff7,
+
+			LaserEmberNorth = 0xfff8,
+			LaserEmberSouth = 0xfff9,
+			LaserEmberWest = 0xfffa,
+			LaserEmberEast = 0xfffb,
+
+			LaserGreenNorth = 0xfffc,
+			LaserGreenSouth = 0xfffd,
+			LaserGreenWest = 0xfffe,
+			LaserGreenEast = 0xffff
+
+
 		};
 
 		enum ObjTypes {
@@ -89,7 +111,9 @@ namespace BallPlay {
 			RedBall = 0x03,
 			Ghost = 0x04, //0x12,
 			Droid = 0x05, //0x11		
-			Girl = 0x06
+			Girl = 0x06,
+			BlueBall = 0x07,
+			EmberBall = 0x08
 		};
 
 #ifdef __cplusplus

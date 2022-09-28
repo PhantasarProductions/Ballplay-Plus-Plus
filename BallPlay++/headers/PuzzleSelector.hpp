@@ -65,6 +65,7 @@ namespace BallPlay {
 		int Solved(int num); // Solved by the current user that is
 		int BestMoves(int num);
 		std::string BestTime(int num);
+		bool GlassLayer() { return Meta.Value("PUZCONFIG", "Glass") == "YES"; }
 	};
 
 	class _Puzzle{
