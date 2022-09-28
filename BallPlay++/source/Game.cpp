@@ -1002,6 +1002,7 @@ namespace BallPlay {
 			if (strcmp(dlay, "WALL") == 0) _GameObject::DrawAll();
 		}
 		if (PlayPuzzle->Pack()->GlassLayer()) PlayPuzzle->DrawLayer("GLASS");
+		TQSG_SetAlpha(255);
 		TileCheck(TStage::Current);
 		SClass::ShowSuits();
 		GameTool::Draw();
