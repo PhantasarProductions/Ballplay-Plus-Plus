@@ -617,6 +617,17 @@ namespace BallPlay {
 	}
 #pragma endregion
 
+#pragma region Dots
+	int CountDots() {
+		int ret{ 0 };
+		for (uint32 y = 0; y < PlayPuzzle->H(); y++)
+			for (uint32 x = 0; x < PlayPuzzle->W(); x++)
+				if (PlayPuzzle->PuzR()->LayVal("DIRECTIONS", x, y)==dot)
+					ret++;
+		return ret;
+	}
+#pragma endregion
+
 
 #pragma region Game_Tools
 	class GameTool {
@@ -1032,6 +1043,25 @@ namespace BallPlay {
 			TQSG_Color(180, 0, 255);
 			Fnt->Draw(show, x, 2, 2);
 			if (t <= 0 && PlayPuzzle->EMission() == Mission::BreakAway) EndPuzzle();
+		}
+
+		if (PlayPuzzle->EMission() == Mission::DotCollector) {
+			if (PlayPuzzle->EMission() == Mission::BreakAway || PlayPuzzle->EMission() == Mission::BreakFree) {
+				auto
+					x{ (TQSG_ScreenWidth() / 4)  },
+					t{ CountDots() };
+				char show[300];
+				switch (t) {
+				case 0: show[0] = 0; break;
+				case 1: strcpy_s(show, "1 dots"); break;
+				default: sprintf_s(show, "%d dots", t); break;
+				}
+				TQSG_Color(0, 0, 0);
+				Fnt->Draw(show, x + 2, 4, 2);
+				TQSG_Color(180, 255, 0);
+				Fnt->Draw(show, x, 2, 2);
+				if (t <= 0 && PlayPuzzle->EMission() == Mission::DotCollector) EndPuzzle();
+			}
 		}
 
 
