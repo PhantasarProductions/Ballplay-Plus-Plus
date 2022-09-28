@@ -64,7 +64,8 @@ namespace BallPlay {
 		{Mission::BreakAway,"Break Away"},
 		{Mission::BreakFree,"Break Free"},
 		{Mission::ColorSplit,"Color Split"},
-		{Mission::DotCollector,"Dot Collector"}
+		{Mission::DotCollector,"Dot Collector"},
+		{Mission::Walkthrough,"Walkthrough"}
 	};
 	static string CapOnly(string A) {
 		string ret{ "" };
