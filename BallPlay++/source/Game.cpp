@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.24
+// Version: 22.09.28
 // EndLic
 
 #pragma region Include_C++
@@ -626,6 +626,23 @@ namespace BallPlay {
 					ret++;
 		return ret;
 	}
+#pragma endregion
+
+#pragma region Lasers
+	class _LaserPoint;
+	typedef shared_ptr<_LaserPoint> LaserPoint;
+	class _LaserPoint {
+	private:
+	public:
+		static map<BallColor, vector<LaserPoint>> Register;
+		static map<BallColor, bool> _Activated;
+		int StartX, StartY;
+		BallColor Color;
+		byte r, g, b;
+		bool Activated() { return _Activated[Color]; }
+	};
+	map<BallColor, vector<LaserPoint>> _LaserPoint::Register{};
+	map<BallColor, bool> _LaserPoint::_Activated;
 #pragma endregion
 
 
