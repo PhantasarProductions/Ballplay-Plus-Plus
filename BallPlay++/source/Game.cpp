@@ -689,6 +689,7 @@ namespace BallPlay {
 		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
 		auto ret{ PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0 };  
 		if (ret) {
+			SFX("Break");
 			PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y, 0);
 			if (PlayPuzzle->EMission() == Mission::BreakFree && CountBreakBlocks() == 0) PlayPuzzle->PuzR()->LayVal("DIRECTIONS", x, y, normalexit);
 		}
