@@ -637,9 +637,24 @@ namespace BallPlay {
 		static map<BallColor, vector<LaserPoint>> Register;
 		static map<BallColor, bool> _Activated;
 		int StartX, StartY;
-		BallColor Color;
-		byte r, g, b;
+		BallColor Color{BallColor::None};
+		byte r{ 0 }, g{0}, b{0};
+		ObjDirection Dir;
 		bool Activated() { return _Activated[Color]; }
+		_LaserPoint(int x, int y, BallColor C, ObjDirection D) {
+			StartX = x;
+			StartY = y;
+			Dir = D;
+			Color = C;
+			switch (C) {
+			case BallColor::Red: r = 255; break;
+			case BallColor::Green: g = 255; break;
+			case BallColor::Blue: b = 255; break;
+			case BallColor::Ember: r = 255; g = 180; break;
+			default: Crash("Unknown laser color"); break;
+			}
+			printf("Laser created (%02d,%02d) (Col code: %04x) Color #%02x%02x%02x  Dir: %d\n", x, y, (int)C, r, g, b, (int)D);
+		}
 	};
 	map<BallColor, vector<LaserPoint>> _LaserPoint::Register{};
 	map<BallColor, bool> _LaserPoint::_Activated;
