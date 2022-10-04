@@ -96,7 +96,12 @@ namespace BallPlay {
 			LaserGreenNorth = 0xfffc,
 			LaserGreenSouth = 0xfffd,
 			LaserGreenWest = 0xfffe,
-			LaserGreenEast = 0xffff
+			LaserGreenEast = 0xffff,
+
+			LaserPlateRed = 0xfef0,
+			LaserPlateBlue = 0xfef4,
+			LaserPlateEmber = 0xfef8,
+			LaserPlateGreen = 0xfefc
 
 
 		};
