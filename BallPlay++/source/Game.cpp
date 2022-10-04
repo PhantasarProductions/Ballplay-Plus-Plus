@@ -74,6 +74,10 @@ namespace BallPlay {
 	Puzzle PlayPuzzle{ nullptr };
 
 
+	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall, Blue = BlueBall, Ember = EmberBall };
+	enum class ObjDirection { North, South, East, West };
+
+
 #pragma region Kaartkleuren
 	static int CountBalls();
 	static bool __Always(Puzzle P) { return true; }
@@ -123,6 +127,48 @@ namespace BallPlay {
 		SClass("Diamonds",__Diamonds,__Always),
 		SClass("Spades",__Spades,__Always)
 	};
+#pragma endregion
+
+#pragma region Lasers
+	class _LaserPoint;
+	typedef shared_ptr<_LaserPoint> LaserPoint;
+	class _LaserPoint {
+	private:
+	public:
+		static BallColor Cols[4];
+		static map<BallColor, shared_ptr<vector<LaserPoint>>> Register;
+		static map<BallColor, bool> _Activated;
+		int StartX, StartY;
+		BallColor Color{ BallColor::None };
+		byte r{ 0 }, g{ 0 }, b{ 0 };
+		ObjDirection Dir;
+		bool Activated() { return _Activated[Color]; }
+		_LaserPoint(int x, int y, BallColor C, ObjDirection D) {
+			StartX = x;
+			StartY = y;
+			Dir = D;
+			Color = C;
+			switch (C) {
+			case BallColor::Red: r = 255; break;
+			case BallColor::Green: g = 255; break;
+			case BallColor::Blue: b = 255; break;
+			case BallColor::Ember: r = 255; g = 180; break;
+			default: Crash("Unknown laser color"); break;
+			}
+			printf("Laser created (%02d,%02d) (Col code: %04x) Color #%02x%02x%02x  Dir: %d\n", x, y, (int)C, r, g, b, (int)D);
+		}
+		static void Make(int x, int y, BallColor C, ObjDirection D) {
+			if (!Register.count(C)) Register[C] = make_shared<vector<LaserPoint>>();
+			Register[C]->push_back(make_shared<_LaserPoint>(x, y, C, D));
+		}
+		static void ClearActivated() {
+
+			for (auto c : Cols) _Activated[c] = false;
+		}
+	};
+	BallColor _LaserPoint::Cols[4]{ BallColor::Red,BallColor::Green,BallColor::Ember,BallColor::Blue };
+	map<BallColor, shared_ptr<vector<LaserPoint>>> _LaserPoint::Register{};
+	map<BallColor, bool> _LaserPoint::_Activated;
 #pragma endregion
 
 
@@ -378,8 +424,6 @@ namespace BallPlay {
 #pragma endregion
 
 #pragma region Game_Objects
-	enum class BallColor { None = Ball, Red = RedBall, Green = GreenBall, Blue = BlueBall, Ember = EmberBall };
-	enum class ObjDirection { North, South, East, West };
 	class _GameObject; typedef shared_ptr<_GameObject> GameObject;
 	void Destroy(_GameObject* o);
 	void Bomb(_GameObject* o);
@@ -534,11 +578,61 @@ namespace BallPlay {
 							case Droid:
 								NewDroid(ix, iy, d);
 								break;
+							case LaserRedEast:
+								_LaserPoint::Make(ix, iy, BallColor::Red, ObjDirection::East);
+								break;
+							case LaserRedWest:
+								_LaserPoint::Make(ix, iy, BallColor::Red, ObjDirection::West);
+								break;
+							case LaserRedNorth:
+								_LaserPoint::Make(ix, iy, BallColor::Red, ObjDirection::North);
+								break;
+							case LaserRedSouth:
+								_LaserPoint::Make(ix, iy, BallColor::Red, ObjDirection::South);
+								break;
+							case LaserBlueEast:
+								_LaserPoint::Make(ix, iy, BallColor::Blue, ObjDirection::East);
+								break;
+							case LaserBlueWest:
+								_LaserPoint::Make(ix, iy, BallColor::Blue, ObjDirection::West);
+								break;
+							case LaserBlueNorth:
+								_LaserPoint::Make(ix, iy, BallColor::Blue, ObjDirection::North);
+								break;
+							case LaserBlueSouth:
+								_LaserPoint::Make(ix, iy, BallColor::Blue, ObjDirection::South);
+								break;
+							case LaserEmberEast:
+								_LaserPoint::Make(ix, iy, BallColor::Ember, ObjDirection::East);
+								break;
+							case LaserEmberWest:
+								_LaserPoint::Make(ix, iy, BallColor::Ember, ObjDirection::West);
+								break;
+							case LaserEmberNorth:
+								_LaserPoint::Make(ix, iy, BallColor::Ember, ObjDirection::North);
+								break;
+							case LaserEmberSouth:
+								_LaserPoint::Make(ix, iy, BallColor::Ember, ObjDirection::South);
+								break;
+							case LaserGreenEast:
+								_LaserPoint::Make(ix, iy, BallColor::Green, ObjDirection::East);
+								break;
+							case LaserGreenWest:
+								_LaserPoint::Make(ix, iy, BallColor::Green, ObjDirection::West);
+								break;
+							case LaserGreenNorth:
+								_LaserPoint::Make(ix, iy, BallColor::Green, ObjDirection::North);
+								break;
+							case LaserGreenSouth:
+								_LaserPoint::Make(ix, iy, BallColor::Green, ObjDirection::South);
+								break;
+
+
 							default: {
 								char E[400];
 								sprintf_s(E, "Unknown object type: '%d'(%x) on position (%02d,%02d)!", o->kind, o->kind, ix, iy);
 								Crash(E);
-							} break;								
+							} break;
 							}
 						}
 					}
@@ -628,37 +722,6 @@ namespace BallPlay {
 	}
 #pragma endregion
 
-#pragma region Lasers
-	class _LaserPoint;
-	typedef shared_ptr<_LaserPoint> LaserPoint;
-	class _LaserPoint {
-	private:
-	public:
-		static map<BallColor, vector<LaserPoint>> Register;
-		static map<BallColor, bool> _Activated;
-		int StartX, StartY;
-		BallColor Color{BallColor::None};
-		byte r{ 0 }, g{0}, b{0};
-		ObjDirection Dir;
-		bool Activated() { return _Activated[Color]; }
-		_LaserPoint(int x, int y, BallColor C, ObjDirection D) {
-			StartX = x;
-			StartY = y;
-			Dir = D;
-			Color = C;
-			switch (C) {
-			case BallColor::Red: r = 255; break;
-			case BallColor::Green: g = 255; break;
-			case BallColor::Blue: b = 255; break;
-			case BallColor::Ember: r = 255; g = 180; break;
-			default: Crash("Unknown laser color"); break;
-			}
-			printf("Laser created (%02d,%02d) (Col code: %04x) Color #%02x%02x%02x  Dir: %d\n", x, y, (int)C, r, g, b, (int)D);
-		}
-	};
-	map<BallColor, vector<LaserPoint>> _LaserPoint::Register{};
-	map<BallColor, bool> _LaserPoint::_Activated;
-#pragma endregion
 
 
 #pragma region Game_Tools
