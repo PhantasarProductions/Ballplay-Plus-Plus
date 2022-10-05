@@ -103,7 +103,6 @@ namespace BallPlay {
 			LaserPlateEmber = 0xfef8,
 			LaserPlateGreen = 0xfefc
 
-
 		};
 
 		enum ObjTypes {
