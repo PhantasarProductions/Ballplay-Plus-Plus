@@ -305,6 +305,7 @@ namespace BallPlay {
 			}}		
 	};
 	void SetGameStage(GameStages N) { TStage::Current = N; /* TQSE_Flush(); */ }
+	
 #pragma endregion
 
 #pragma region Explosions
@@ -1061,12 +1062,14 @@ namespace BallPlay {
 			success = CountBalls() >= PlayPuzzle->Required();
 			break;
 		}
-		if (success) {
-			auto u{ _User::Get() };
-			SetGameStage(GameStages::Success);
-			PlayPuzzle->Solved();
-			PlayPuzzle->BestTime(PlayPuzzle->Time);
-			PlayPuzzle->BestMoves(PlayPuzzle->Moves);
+		if (success){
+			if (TStage::Current != GameStages::Success) {
+				auto u{ _User::Get() };
+				SetGameStage(GameStages::Success);
+				PlayPuzzle->Solved();
+				PlayPuzzle->BestTime(PlayPuzzle->Time);
+				PlayPuzzle->BestMoves(PlayPuzzle->Moves);
+			}
 		} else
 			SetGameStage(GameStages::Fail);
 	}
