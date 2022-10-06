@@ -308,7 +308,7 @@ namespace BallPlay {
 	void _Puzzle::Solved(bool val) {
 		auto u{ _User::Get() };
 		if (val)
-			u->Solved(_Pack, _Tag, u->Solved(_Pack, _Tag)+1);		
+			u->Solved(_Pack, _Tag, u->Solved(_Pack, _Tag)+1);
 	}
 
 	void _Puzzle::BestTime(uint32 i) {
