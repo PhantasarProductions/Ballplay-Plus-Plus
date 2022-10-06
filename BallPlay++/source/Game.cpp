@@ -157,6 +157,7 @@ namespace BallPlay {
 			}
 			printf("Laser created (%02d,%02d) (Col code: %04x) Color #%02x%02x%02x  Dir: %d\n", x, y, (int)C, r, g, b, (int)D);
 		}
+		void Shoot();
 		static void Make(int x, int y, BallColor C, ObjDirection D) {
 			if (!Register.count(C)) Register[C] = make_shared<vector<LaserPoint>>();
 			Register[C]->push_back(make_shared<_LaserPoint>(x, y, C, D));
@@ -709,6 +710,60 @@ namespace BallPlay {
 					ret++;
 		return ret;
 	}
+
+	void _LaserPoint::Shoot() {
+		int
+			beamx{ StartX },
+			beamy{ StartY },
+			lbx{ StartX * PlayPuzzle->GridW() },
+			lby{ StartY * PlayPuzzle->GridH() },
+			lsx{ 0 },
+			lsy{ 0 },
+			lex{ 0 },
+			ley{ 0 };
+		//cout << "Shoot! (" << StartX << "," << StartY << ") D:" << (int)Dir << "C:" << (int)r << "," << (int)g << "," << (int)b << endl; // Debug Only
+		//cout << "Check " << (beamx >= 0) << (beamy >= 0) << (beamx < PlayPuzzle->W()) << (beamy < PlayPuzzle->H()) << (PlayPuzzle->PuzR()->LayVal("WALL", beamx, beamy) == 0) << (PlayPuzzle->PuzR()->LayVal("BREAK", beamx, beamy) == 0) << " Break:" << PlayPuzzle->PuzR()->LayVal("BREAK", beamx, beamy) << endl;
+		do {
+			switch (Dir) {
+			case ObjDirection::North:
+				lsy = lby;
+				lsx = lbx + (PlayPuzzle->GridW() / 2);
+				beamy--;
+				lex = lsx;
+				ley = beamy * PlayPuzzle->GridH();
+				break;
+			case ObjDirection::South:
+				lsy = lby + PlayPuzzle->GridH();
+				lsx = lbx + (PlayPuzzle->GridW() / 2);
+				beamy++;
+				lex = lsx;
+				ley = (beamy+1) * PlayPuzzle->GridH();
+				break;
+			case ObjDirection::West:
+				lsx = lbx;
+				lsy = lby + (PlayPuzzle->GridH() / 2);
+				beamx--;
+				ley = lsy;
+				lex = beamx * PlayPuzzle->GridW();
+				break;
+			case ObjDirection::East:
+				lsx = lbx + PlayPuzzle->GridW();
+				lsy = lby + (PlayPuzzle->GridH() / 2);
+				beamx++;
+				ley = lsy;
+				lex = (beamx+1) * PlayPuzzle->GridW();
+				break;
+			default:
+				Crash("Unknown laser direction");
+			}
+			for (auto o : _GameObject::List) {
+				if (beamx == o->x && beamy == o->y && (!o->Removed)) Bomb(o.get());
+			}
+		} while (beamx >= 0 && beamy >= 0 && beamx < PlayPuzzle->W() && beamy < PlayPuzzle->H() && PlayPuzzle->PuzR()->LayVal("WALL", beamx, beamy) == 0 && PlayPuzzle->PuzR()->LayVal("BREAK", beamx, beamy) == 0);
+		TQSG_ACol(r, g, b, 255);
+		//printf("Laser Line(%04d,%04d) -> (%04d,%04d)  :: GridLine(%02d,%02d) -> (%02d,%02d)\n", lsx + PlayPuzzle->gPX(), lsy + PlayPuzzle->gPY(), lex + PlayPuzzle->gPX(), ley + PlayPuzzle->gPY(),StartX,StartY,beamx,beamy); // debug only
+		TrickyUnits::TQSG_Line(lsx + PlayPuzzle->gPX(), lsy + PlayPuzzle->gPY(), lex + PlayPuzzle->gPX(), ley + PlayPuzzle->gPY());
+	}
 #pragma endregion
 
 #pragma region Dots
@@ -958,6 +1013,11 @@ namespace BallPlay {
 		case ExitRed: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Red) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
 		case ExitEmber: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Ember) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
 		case ExitBlue: if (o->Type == ObjTypes::Ball) if (o->Col == BallColor::Blue) Finished(o); else if (o->Col != BallColor::None) { SFX("Buzz"); Destroy(o); } break;
+
+		case LaserPlateBlue: _LaserPoint::_Activated[BallColor::Blue] = true; break;
+		case LaserPlateEmber:_LaserPoint::_Activated[BallColor::Ember] = true; break;
+		case LaserPlateGreen:_LaserPoint::_Activated[BallColor::Green] = true; break;
+		case LaserPlateRed: _LaserPoint::_Activated[BallColor::Red] = true; break;
 		}
 
 		if ((!o->JustTransported) && (!PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y))) {
@@ -1055,6 +1115,7 @@ namespace BallPlay {
 		PTicks = SDL_GetTicks();
 		// Move when minimal amount of ticks have passed
 		if (abs(PTicks - OTicks > OWaitTicks)) {
+			_LaserPoint::ClearActivated();
 			for (auto o : _GameObject::List) {
 				o->Move();
 				if (PlayPuzzle->PuzR()->LayVal("BOMBS", o->x, o->y)) {
@@ -1064,6 +1125,14 @@ namespace BallPlay {
 				DeathCheck(o.get());
 			}
 			OTicks = PTicks;
+			//static BallColor lcols[4]{ BallColor::Red,BallColor::Green,BallColor::Ember,BallColor::Blue };
+		}
+		for (auto c : _LaserPoint::Register) {
+			if (_LaserPoint::_Activated[c.first]) {
+				for (auto l : *c.second) {
+					l->Shoot();
+				}
+			}
 		}
 	
 		/* DEBUG ONLY
