@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.10.15
+// Version: 22.10.16
 // EndLic
 
 #pragma region Include_C++
@@ -871,6 +871,12 @@ namespace BallPlay {
 #pragma endregion
 
 #pragma region Game_Flow
+	struct GirlArrow {
+		int x{ 0 }, y{ 0 }, mx{ 0 }, my{ 0 };
+		TQSG_AutoImage Icon;
+		SDL_KeyCode Arrow{ SDLK_0 }, WASD{ SDLK_0 };
+	};
+
 	bool Break(int x, int y) { 
 		if (x < 0 || y < 0 || x >= PlayPuzzle->W() || y >= PlayPuzzle->H()) return true;
 		auto ret{ PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y) > 0 };  
@@ -1072,8 +1078,61 @@ namespace BallPlay {
 
 	}
 
-	void GirlMove(_GameObject* o) { 
+	void GirlMove(_GameObject* o) {
 		//Crash("Moving girls not yet supported"); 
+		static GirlArrow Arrows[4]{
+			{
+				TQSG_ScreenWidth() - 96,
+				TQSG_ScreenHeight() - 128,
+				0,-1,
+				TQSG_LoadAutoImage(Resource(),"GFX/Arrow/Arrow Up.png"),
+				SDLK_UP,SDLK_w
+			},
+			{
+				TQSG_ScreenWidth() - 96,
+				TQSG_ScreenHeight() - 64,
+				0,1,
+				TQSG_LoadAutoImage(Resource(),"GFX/Arrow/Arrow Down.png"),
+				SDLK_DOWN,SDLK_s
+			},
+			{
+				TQSG_ScreenWidth() - 128,
+				TQSG_ScreenHeight() - 96,
+				-1,0,
+				TQSG_LoadAutoImage(Resource(),"GFX/Arrow/Arrow Left.png"),
+				SDLK_LEFT,SDLK_a
+			},
+			{
+				TQSG_ScreenWidth() - 64,
+				TQSG_ScreenHeight() - 96,
+				1,0,
+				TQSG_LoadAutoImage(Resource(),"GFX/Arrow/Arrow Right.png"),
+				SDLK_RIGHT,SDLK_d
+			}
+		};
+		int MX{ TQSE_MouseX() }, MY{ TQSE_MouseY() };
+		bool ML{ TQSE_MouseHit(1) };
+		int MvX{ 0 }, MvY{ 0 };
+		for (auto GA : Arrows) {
+			if (MX > GA.x && MY > GA.y && MX < GA.x + 32 && MY < GA.y + 32) {
+				TQSG_Color(255, 180, 0);
+				if (ML) {
+					MvX = GA.mx;
+					MvY = GA.my;
+				}
+			} else TQSG_Color(255, 255, 255);
+			if (MvX == 0 && MvY == 0 && (TQSE_KeyHit(GA.WASD) || TQSE_KeyHit(GA.Arrow))) {
+				MvX = GA.mx;
+				MvY = GA.my;
+			}
+			GA.Icon->Draw(GA.x, GA.y);
+		}
+		if (o->x + MvX >= 0 && o->y + MvY >= 0 && o->y + MvY < PlayPuzzle->H() && o->x + MvX < PlayPuzzle->W() && (!(PlayPuzzle->PuzR()->LayVal("WALL", o->x + MvX, o->y + MvY)) || (PlayPuzzle->PuzR()->LayVal("Break", o->x + MvX, o->y + MvY)))) {
+			o->x += MvX;
+			o->y += MvY;
+			o->modx = (-MvX) * PlayPuzzle->GridW();
+			o->mody = (-MvY) * PlayPuzzle->GridH();
+		}
 	}
 
 	void EndPuzzle() {
