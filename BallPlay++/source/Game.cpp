@@ -441,6 +441,7 @@ namespace BallPlay {
 		ObjectMove _Move{ nullptr };
 	public:
 		static vector<GameObject> List;
+		static vector<GameObject> Girls;
 		bool Removed{ false };
 		ObjTypes Type{ Ball };
 		int
@@ -498,6 +499,24 @@ namespace BallPlay {
 			return ret;
 		}
 
+		static GameObject NewGirl(int x, int y) {
+			auto ret{ _NEW() };
+			auto Pack{ PlayPuzzle->PackName() };
+			ret->Type = Girl;
+			ret->x = x;
+			ret->y = y;
+			ret->_Move = GirlMove;
+			if (!ImgReg[Pack].count(Girl)) {
+				cout << "Loading girl\n";
+				// I must keep in mind to update this, if more packs are going to support this, but for now only Cupid does.
+				ImgReg[Pack][Girl] = TQSG_LoadAutoImage(Resource(), "Packages/BallPlay Cupid/Textures/pz_objects_woman.png");
+				Assert(ImgReg[Pack][Girl] && ImgReg[Pack][Girl]->Frames(), "No Girl image loaded");
+				ImgReg[Pack][Girl]->Hot(0, PlayPuzzle->GridH());
+			}
+			List.push_back(ret);
+			Girls.push_back(ret);
+		}
+
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
 			auto ret{ _NEW() };
 			auto Pack{ PlayPuzzle->PackName() };
@@ -545,7 +564,10 @@ namespace BallPlay {
 			return ret;
 		}
 		static void Scan(bool clean=true) {
-			if (clean) List.clear();
+			if (clean) {
+				List.clear();
+				Girls.clear();
+			}
 			uint32 obj0{ 0 };
 			for (auto iy = 0; iy < PlayPuzzle->H(); ++iy) {
 				for (auto ix = 0; ix < PlayPuzzle->W(); ++ix) {
@@ -628,8 +650,9 @@ namespace BallPlay {
 							case LaserGreenSouth:
 								_LaserPoint::Make(ix, iy, BallColor::Green, ObjDirection::South);
 								break;
-
-
+							case Girl:
+								NewGirl(ix, iy);
+								break;
 							default: {
 								char E[400];
 								sprintf_s(E, "Unknown object type: '%d'(%x) on position (%02d,%02d)!", o->kind, o->kind, ix, iy);
@@ -686,6 +709,7 @@ namespace BallPlay {
 	uint64 _GameObject::Teller{ 0 };
 	map<string,map<ObjTypes, TQSG_AutoImage>> _GameObject::ImgReg{};
 	vector<GameObject> _GameObject::List{};
+	vector<GameObject> _GameObject::Girls{};
 
 	void ScanObjects(bool clean) { _GameObject::Scan(clean); }
 	static int CountBalls() {
@@ -1048,7 +1072,9 @@ namespace BallPlay {
 
 	}
 
-	void GirlMove(_GameObject* o) { Crash("Moving girls not yet supported"); }
+	void GirlMove(_GameObject* o) { 
+		//Crash("Moving girls not yet supported"); 
+	}
 
 	void EndPuzzle() {
 		bool success{ false };
@@ -1120,7 +1146,7 @@ namespace BallPlay {
 		if (abs(PTicks - OTicks > OWaitTicks)) {
 			_LaserPoint::ClearActivated();
 			for (auto o : _GameObject::List) {
-				o->Move();
+				if (o->Type!=Girl) o->Move();
 				if (PlayPuzzle->PuzR()->LayVal("BOMBS", o->x, o->y)) {
 					Bomb(o.get());
 					PlayPuzzle->PuzR()->LayVal("BOMBS", o->x, o->y, 0);
@@ -1130,6 +1156,7 @@ namespace BallPlay {
 			OTicks = PTicks;
 			//static BallColor lcols[4]{ BallColor::Red,BallColor::Green,BallColor::Ember,BallColor::Blue };
 		}
+		for (auto girl : _GameObject::Girls) girl->Move(); // Result of not really thinking the timer though.
 		for (auto c : _LaserPoint::Register) {
 			if (_LaserPoint::_Activated[c.first]) {
 				for (auto l : *c.second) {
