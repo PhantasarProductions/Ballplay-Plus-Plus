@@ -80,6 +80,7 @@ namespace BallPlay {
 
 #pragma region Kaartkleuren
 	static int CountBalls();
+	static int CountGirls();
 	static bool __Always(Puzzle P) { return true; }
 	static bool __ShowHearts(Puzzle P) { return PlayPuzzle->EMission() == Mission::Normal || PlayPuzzle->EMission()==Mission::ColorSplit || PlayPuzzle->EMission() == Mission::BreakFree; }
 	static int __Hearts(Puzzle P) { return P->BallsIn; }
@@ -515,6 +516,8 @@ namespace BallPlay {
 			}
 			List.push_back(ret);
 			Girls.push_back(ret);
+			printf("Girl created at spot (%02d,%02d) (Object: #%d)\n", x, y, ret->ID());
+			return ret;
 		}
 
 		static GameObject NewBall(int x, int y, ObjDirection D=ObjDirection::South,BallColor Col = { BallColor::None },ObjectMove _MoveFunction=nullptr) {
@@ -565,14 +568,17 @@ namespace BallPlay {
 		}
 		static void Scan(bool clean=true) {
 			if (clean) {
-				List.clear();
-				Girls.clear();
+				List.clear(); cout << "Cleared General Object List\n";
+				Girls.clear(); cout << "Cleared Girls List\n";
 			}
 			uint32 obj0{ 0 };
 			for (auto iy = 0; iy < PlayPuzzle->H(); ++iy) {
 				for (auto ix = 0; ix < PlayPuzzle->W(); ++ix) {
-					if (PlayPuzzle->PuzR()->MapObjects->Value(ix, iy)) {
-						for (auto o : *PlayPuzzle->PuzR()->MapObjects->Value(ix, iy)) {
+					auto mo{ PlayPuzzle->PuzR()->MapObjects->Value(ix, iy) };
+					if (mo) {
+						//for (auto o : *mo.get()) {
+						for (size_t i = 0; i < mo->size(); i++) {
+							SuperTed::TeddyObject o{ (*mo)[i] };
 							auto d{ ObjDirection::South };
 							if (o->Data["Direction"] == "North") d = ObjDirection::North;
 							else if (o->Data["Direction"] == "East") d = ObjDirection::East;
@@ -735,6 +741,8 @@ namespace BallPlay {
 					ret++;
 		return ret;
 	}
+	
+
 
 	void _LaserPoint::Shoot() {
 		int
@@ -802,6 +810,13 @@ namespace BallPlay {
 	}
 #pragma endregion
 
+#pragma region Girls
+	int CountGirls() { 
+		int r{ 0 };
+		for (auto girl : _GameObject::Girls) if (!girl->Removed) r++;
+		//return (int)_GameObject::Girls.size(); 
+		return r;
+	}
 
 
 #pragma region Game_Tools
@@ -1133,6 +1148,9 @@ namespace BallPlay {
 			o->modx = (-MvX) * PlayPuzzle->GridW();
 			o->mody = (-MvY) * PlayPuzzle->GridH();
 		}
+		if (PlayPuzzle->PuzR()->LayVal("DIRECTIONS", o->x, o->y) == GirlHome) {
+			o->Removed = true;
+		}
 	}
 
 	void EndPuzzle() {
@@ -1296,6 +1314,22 @@ namespace BallPlay {
 			TQSG_Color(180, 0, 255);
 			Fnt->Draw(show, x, 2, 2);
 			if (t <= 0 && PlayPuzzle->EMission() == Mission::BreakAway) EndPuzzle();
+		}
+		if (PlayPuzzle->EMission() == Mission::Walkthrough) {
+			auto
+				x{ (TQSG_ScreenWidth() / 4) * 3 },
+				t{ CountGirls()};
+			char show[300];
+			switch (t) {
+			case 0: show[0] = 0; break;
+			case 1: strcpy_s(show, "1 girl"); break;
+			default: sprintf_s(show, "%d girls", t); break;
+			}
+			TQSG_Color(0, 0, 0);
+			Fnt->Draw(show, x + 2, 4, 2);
+			TQSG_Color(255, 180, 170);
+			Fnt->Draw(show, x, 2, 2);
+			if (t <= 0) EndPuzzle();
 		}
 
 		if (PlayPuzzle->EMission() == Mission::DotCollector) {
