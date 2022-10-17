@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.10.16
+// Version: 22.10.17
 // EndLic
 
 #pragma region Include_C++
@@ -513,6 +513,9 @@ namespace BallPlay {
 				ImgReg[Pack][Girl] = TQSG_LoadAutoImage(Resource(), "Packages/BallPlay Cupid/Textures/pz_objects_woman.png");
 				Assert(ImgReg[Pack][Girl] && ImgReg[Pack][Girl]->Frames(), "No Girl image loaded");
 				ImgReg[Pack][Girl]->Hot(0, PlayPuzzle->GridH());
+				ImgReg[Pack][DeadGirl] = TQSG_LoadAutoImage(Resource(), "Packages/BallPlay Cupid/Textures/pz_objects_womanghost.png");
+				Assert(ImgReg[Pack][DeadGirl] && ImgReg[Pack][Girl]->Frames(), "No Girl image loaded");
+				ImgReg[Pack][DeadGirl]->Hot(0, PlayPuzzle->GridH());
 			}
 			List.push_back(ret);
 			Girls.push_back(ret);
@@ -683,8 +686,14 @@ namespace BallPlay {
 			int dy{ PlayPuzzle->gPY() + (y * PlayPuzzle->GridH()) + mody };
 			TQSG_ACol(r, g, b, a);
 			Img()->Draw(dx, dy);
-			if (modx > 0) modx = max(0, modx - spdx); else if (modx < 0) modx = min(0, modx + spdx);
-			if (mody > 0) mody = max(0, mody - spdy); else if (mody < 0) mody = min(0, mody + spdy);
+			if (Type == DeadGirl) {
+				mody--;
+				if (mody % 4 == 0 && a) a--;
+				if (!a) Removed = true;
+			} else {
+				if (modx > 0) modx = max(0, modx - spdx); else if (modx < 0) modx = min(0, modx + spdx);
+				if (mody > 0) mody = max(0, mody - spdy); else if (mody < 0) mody = min(0, mody + spdy);
+			}
 		}
 		static void DrawAll() {
 			for (auto o : List) if (!o->Removed) {
@@ -693,17 +702,19 @@ namespace BallPlay {
 					if (o2->x == o->x && o2->y == o->y && o2->ID() != o->ID()) {
 						switch (o->Type) {
 						case ObjTypes::Ball:
-							if (o2->Type == ObjTypes::Girl) Crash("Killing girls by balls not yet supported");
+							if (o2->Type == ObjTypes::Girl)
+								//Crash("Killing girls by balls not yet supported");
+								Destroy(o2.get());
 							break;
 						case ObjTypes::Ghost:
 							switch(o2->Type){
-							case ObjTypes::Girl: Crash("Killing girls by ghosts not yet supported"); break;
+							case ObjTypes::Girl: //Crash("Killing girls by ghosts not yet supported"); break;
 							case ObjTypes::Ball: Destroy(o2.get()); SFX("Ghost"); break;
 							}
 							break;
 						case ObjTypes::Droid:
 							switch (o2->Type) {
-							case ObjTypes::Girl: Crash("Killing girls by droids not yet supported"); break;
+							case ObjTypes::Girl: //Crash("Killing girls by droids not yet supported"); break;
 							case ObjTypes::Ball: Bomb(o2.get()); break;
 							}
 						}
@@ -813,7 +824,8 @@ namespace BallPlay {
 #pragma region Girls
 	int CountGirls() { 
 		int r{ 0 };
-		for (auto girl : _GameObject::Girls) if (!girl->Removed) r++;
+		for (auto girl : _GameObject::Girls) 
+			if ((!girl->Removed) || girl->Type==DeadGirl) r++;
 		//return (int)_GameObject::Girls.size(); 
 		return r;
 	}
@@ -916,8 +928,22 @@ namespace BallPlay {
 	}
 
 	void Destroy(_GameObject* o) {
-		if (o->Type == Ball) PlayPuzzle->BallsDestroyed++;
-		o->Removed = true;
+		switch (o->Type) {
+		case DeadGirl:
+			break; // Ignore
+		case Girl:
+			o->Type = DeadGirl;
+			o->a = 180;
+			SetGameStage(GameStages::Fail);
+			break;
+		case Ball: 
+			PlayPuzzle->BallsDestroyed++;
+			// Falltrough
+		default:
+			o->Removed = true;
+			break;
+		}
+
 	}
 
 	void Bomb(_GameObject* o) {
