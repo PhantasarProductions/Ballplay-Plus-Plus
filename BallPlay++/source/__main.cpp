@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.22
+// Version: 22.10.18
 // EndLic
 // 
 
@@ -42,11 +42,16 @@
 // SuperTed
 #include <SuperTed_Draw_TQSG.hpp>
 
+// Medals
+#include <Medals.hpp>
+
 // BallPlay++
 #include <builddate.h>
 #include <Resource.hpp>
 #include <Chain.hpp>
 #include <Users.hpp>
+
+
 
 using namespace TrickyUnits;
 using namespace BallPlay;
@@ -64,8 +69,10 @@ int main(int cnt, char** args) {
 	TQSG_Cls();
 	TQSG_Flip(30);
 	TQSE_Init(); std::cout << "Init Events";
-	std::cout<<"Init Audio Mixer: "<<s[TQSA_Init()];
+	std::cout << "Init Audio Mixer: " << s[TQSA_Init()] << std::endl;
 	SuperTed::SuperTed_InitTQSG(Resource());
+	std::cout << "Init Medals\n";
+	TrickyMedals::LoadFromJCR6(Resource(), "Medals/Medals.ini");
 	CheckUserStartUp();
 	ChainRun();
 	std::cout << "Unloading SDL2\n"; TQSG_Close();

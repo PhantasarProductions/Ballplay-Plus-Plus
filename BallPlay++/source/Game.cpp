@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.10.17
+// Version: 22.10.18
 // EndLic
 
 #pragma region Include_C++
@@ -38,6 +38,10 @@
 #include <TrickyTime.hpp>
 #include <TrickyMath.hpp>
 #include <TrickyLinkedList.hpp>
+#pragma endregion
+
+#pragma region Medals
+#include <Medals.hpp>
 #pragma endregion
 
 #pragma region BallPlay_Includes
@@ -1193,11 +1197,26 @@ namespace BallPlay {
 		}
 		if (success){
 			if (TStage::Current != GameStages::Success) {
+				using namespace TrickyMedals;
 				auto u{ _User::Get() };
 				SetGameStage(GameStages::Success);
 				PlayPuzzle->Solved();
 				PlayPuzzle->BestTime(PlayPuzzle->Time);
 				PlayPuzzle->BestMoves(PlayPuzzle->Moves);
+				auto MedTag{ PlayPuzzle->Tag() + "_" + PlayPuzzle->PackName() };
+				Award("BallPlay++",MedTag.c_str());
+				{
+					char tt[500];
+					bool all{ true };
+					for (byte i = 0; i <= 50; i++) {
+						sprintf_s(tt, "Puz%02d_%s", i, PlayPuzzle->PackName().c_str());
+						all = all && Awarded("BallPlay+", tt);
+					}
+					if (all) {
+						string at{ "ALL_" + PlayPuzzle->PackName() };
+						Award("BallPlay++", at.c_str());
+					}
+				}
 			}
 		} else
 			SetGameStage(GameStages::Fail);

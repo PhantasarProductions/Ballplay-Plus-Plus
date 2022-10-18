@@ -37,6 +37,9 @@
     <Filter Include="Header Files\JCR6">
       <UniqueIdentifier>{0e432882-aa4a-415f-9db7-a3a5f628eb17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Medals">
+      <UniqueIdentifier>{5caba057-2919-4367-8067-048cf267cabf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\__main.cpp">
@@ -129,6 +132,15 @@
     <ClCompile Include="source\Audio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Medals\Medals.cpp">
+      <Filter>Source Files\Medals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\GetHTTP.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\TrickyUnits\Source\MD5.cpp">
+      <Filter>Source Files\Units</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Apollo Game Engine\packages\zlib-msvc14-x64.1.2.11.7795\build\native\include\zconf.h">
@@ -205,6 +217,12 @@
     </ClInclude>
     <ClInclude Include="headers\Audio.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Medals\Medals.hpp">
+      <Filter>Source Files\Medals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Medals\TrueMedals.hpp">
+      <Filter>Source Files\Medals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

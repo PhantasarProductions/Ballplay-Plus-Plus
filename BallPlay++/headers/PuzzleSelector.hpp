@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.09.28
+// Version: 22.10.18
 // EndLic
 
 #pragma once
@@ -85,6 +85,7 @@ namespace BallPlay {
 	public:
 		PuzPack Pack();
 		SuperTed::TeddyRoom PuzR();
+		std::string Tag() { return _Tag; }
 		void DrawLayer(std::string Lay);
 		int PixW();
 		int PixH();
