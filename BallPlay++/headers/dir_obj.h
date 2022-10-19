@@ -21,7 +21,7 @@
 // Please note that some references to data like pictures or audio, do not automatically
 // fall under this licenses. Mostly this is noted in the respective files.
 // 
-// Version: 22.10.17
+// Version: 22.10.19
 // EndLic
 #pragma once
 #ifdef __cplusplus
