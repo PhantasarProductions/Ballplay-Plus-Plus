@@ -59,6 +59,7 @@ namespace BallPlay {
 			droidarrowup = 0x2e,
 			droidarrownorth = 0x2e,
 			dot = 0x31,
+			Dot = 0x31,
 			normalexit = 0x70,
 			greenexit = 0x71,
 			redexit = 0x72,
