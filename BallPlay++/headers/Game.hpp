@@ -54,5 +54,6 @@ namespace BallPlay {
 
 	void ScanObjects(bool clean=true);
 	void Scan4Tools();
+	void ResetMDots();
 	bool Game();
 }
