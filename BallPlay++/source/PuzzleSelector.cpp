@@ -65,6 +65,7 @@ namespace BallPlay {
 		{Mission::BreakFree,"Break Free"},
 		{Mission::ColorSplit,"Color Split"},
 		{Mission::DotCollector,"Dot Collector"},
+		{Mission::BreakAndCollect,"Break & Collect"},
 		{Mission::Walkthrough,"Walkthrough"}
 	};
 	static string CapOnly(string A) {
@@ -352,6 +353,7 @@ namespace BallPlay {
 				Crash("Failed to parse mission: '" + ret->PuzMap->Data["Mission"]);
 		}
 		PlayPuzzle = ret;
+		ResetMDots();
 		ScanObjects();
 		Scan4Tools();
 		return ret;
