@@ -134,6 +134,17 @@ namespace BallPlay {
 	};
 #pragma endregion
 
+#pragma region Break2Dot
+	struct _MDot {
+		int
+			x{ 0 },
+			y{ 0 };
+	};
+	typedef shared_ptr<_MDot> MDot;
+	vector<MDot> MDots{};
+	void ResetMDots() { MDots.clear(); }
+#pragma endregion
+
 #pragma region Lasers
 	class _LaserPoint;
 	typedef shared_ptr<_LaserPoint> LaserPoint;
@@ -915,6 +926,23 @@ namespace BallPlay {
 			SFX("Break");
 			PlayPuzzle->PuzR()->Layers["BREAK"]->Field->Value(x, y, 0);
 			if (PlayPuzzle->EMission() == Mission::BreakFree && CountBreakBlocks() == 0) PlayPuzzle->PuzR()->LayVal("DIRECTIONS", x, y, normalexit);
+			if (PlayPuzzle->EMission() == Mission::BreakAndCollect) {
+				auto ND{ make_shared<_MDot>() }; ND->x = x; ND->y = y;
+				MDots.push_back(ND);
+				if (CountBreakBlocks() <= 0) {
+					for (auto IDot : MDots) {
+						auto v{ PlayPuzzle->PuzR()->LayVal("DIRECTIONS",IDot->x,IDot->y) };
+						if (
+							v == 0 ||
+							v == userplate1 ||
+							v == userplate2
+							) {
+							PlayPuzzle->PuzR()->LayVal("DIRECTIONS", x, y, Dot);
+						}
+					}
+				}
+			}
+		
 		}
 		return ret; 
 	}
@@ -1308,7 +1336,7 @@ namespace BallPlay {
 #pragma endregion
 
 
-#pragma region Chain callback
+#pragma region Chain_CallBack
 	bool Game() {
 		TQSE_Poll();
 		static int
@@ -1344,7 +1372,7 @@ namespace BallPlay {
 		TQSG_Color(0, 180, 255);
 		Fnt->Draw(STime, (TQSG_ScreenWidth() / 2), 2,2);
 
-		if (PlayPuzzle->EMission() == Mission::BreakAway || PlayPuzzle->EMission() == Mission::BreakFree) {
+		if (PlayPuzzle->EMission() == Mission::BreakAway || PlayPuzzle->EMission() == Mission::BreakFree || (PlayPuzzle->EMission()==Mission::BreakAndCollect && CountBreakBlocks())) {
 			auto
 				x{ (TQSG_ScreenWidth() / 4) * 3 },
 				t{ CountBreakBlocks() };
@@ -1377,23 +1405,22 @@ namespace BallPlay {
 			if (t <= 0) EndPuzzle();
 		}
 
-		if (PlayPuzzle->EMission() == Mission::DotCollector) {
-			if (PlayPuzzle->EMission() == Mission::BreakAway || PlayPuzzle->EMission() == Mission::BreakFree) {
-				auto
-					x{ (TQSG_ScreenWidth() / 4)  },
-					t{ CountDots() };
-				char show[300];
-				switch (t) {
-				case 0: show[0] = 0; break;
-				case 1: strcpy_s(show, "1 dots"); break;
-				default: sprintf_s(show, "%d dots", t); break;
-				}
-				TQSG_Color(0, 0, 0);
-				Fnt->Draw(show, x + 2, 4, 2);
-				TQSG_Color(180, 255, 0);
-				Fnt->Draw(show, x, 2, 2);
-				if (t <= 0 && PlayPuzzle->EMission() == Mission::DotCollector) EndPuzzle();
+		if (PlayPuzzle->EMission() == Mission::DotCollector || (PlayPuzzle->EMission()==Mission::BreakAndCollect && CountBreakBlocks()==0)) {
+			auto
+				x{ (TQSG_ScreenWidth() / 4) },
+				t{ CountDots() };
+			char show[300];
+			switch (t) {
+			case 0: show[0] = 0; break;
+			case 1: strcpy_s(show, "1 dots"); break;
+			default: sprintf_s(show, "%d dots", t); break;
 			}
+			TQSG_Color(0, 0, 0);
+			Fnt->Draw(show, x + 2, 4, 2);
+			TQSG_Color(180, 255, 0);
+			Fnt->Draw(show, x, 2, 2);
+			if (t <= 0 && PlayPuzzle->EMission() == Mission::DotCollector) EndPuzzle();
+			if (t <= 0 && PlayPuzzle->EMission() == Mission::BreakAndCollect && CountBreakBlocks() == 0) EndPuzzle();
 		}
 
 
