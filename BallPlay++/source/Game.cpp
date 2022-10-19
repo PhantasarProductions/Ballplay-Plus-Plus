@@ -929,6 +929,7 @@ namespace BallPlay {
 			if (PlayPuzzle->EMission() == Mission::BreakAndCollect) {
 				auto ND{ make_shared<_MDot>() }; ND->x = x; ND->y = y;
 				MDots.push_back(ND);
+				printf("Saved for collect (%02d,%02d) (count: %d)\n", ND->x, ND->y, (int)MDots.size());
 				if (CountBreakBlocks() <= 0) {
 					for (auto IDot : MDots) {
 						auto v{ PlayPuzzle->PuzR()->LayVal("DIRECTIONS",IDot->x,IDot->y) };
@@ -937,7 +938,7 @@ namespace BallPlay {
 							v == userplate1 ||
 							v == userplate2
 							) {
-							PlayPuzzle->PuzR()->LayVal("DIRECTIONS", x, y, Dot);
+							PlayPuzzle->PuzR()->LayVal("DIRECTIONS", IDot->x, IDot->y, Dot);
 						}
 					}
 				}
@@ -1122,6 +1123,9 @@ namespace BallPlay {
 		case LaserPlateEmber:_LaserPoint::_Activated[BallColor::Ember] = true; break;
 		case LaserPlateGreen:_LaserPoint::_Activated[BallColor::Green] = true; break;
 		case LaserPlateRed: _LaserPoint::_Activated[BallColor::Red] = true; break;
+		case Dot:
+			if (o->Type == ObjTypes::Ball)  PlayPuzzle->PuzR()->Layers["DIRECTIONS"]->Field->Value(o->x, o->y, 0);
+			break;
 		}
 
 		if ((!o->JustTransported) && (!PlayPuzzle->PuzR()->LayVal("TRANS", o->x, o->y))) {
